@@ -6,7 +6,7 @@ class SupervisorDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5 research_management_F6FA),
+      backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -20,13 +20,13 @@ class SupervisorDashboard extends StatelessWidget {
             onPressed: () {},
           ),
           const CircleAvatar(
-            backgroundImage: NetworkImage('https://i.pravatar.cc/u/u=supervisor'),
+            backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=supervisor'),
           ),
-          const SizedBox( width: 16),
+          const SizedBox(width: 16),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const theEdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -110,17 +110,18 @@ class SupervisorDashboard extends StatelessWidget {
   Widget _buildGroupCard(String title, String groupName, double progress, String status) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const definedEdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05 account),
-              blurRadius: 10,
-              offset: const Offset_0_5,
-            ),
-          ]),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
