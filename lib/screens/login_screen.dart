@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/supabase_service.dart';
+import 'student_dashboard.dart';
+import 'supervisor_dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,20 +11,47 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _idController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   Future<void> _handleLogin() async {
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('يرجى إدخال اسم المستخدم وكلمة المرور')),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
-    // هنا سيتم إضافة منطق التحقق من Supabase بناءً على الرقم الجامعي وكلمة المرور
-    // وتوجيه المستخدم حسب دوره (طالب، مشرف، إلخ)
-    await Future.delayed(const Duration(seconds: 2)); // محاكاة عملية الدخول
-    setState(() => _isLoading = false);
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('جاري التحقق من البيانات...')),
+
+    final result = await SupabaseService.login(
+      _usernameController.text,
+      _passwordController.text,
     );
+
+    setState(() => _isLoading = false);
+
+    if (result != null) {
+      final String role = result['role'];
+      
+      if (role == 'student') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const StudentDashboard()),
+        );
+      } else if (role == 'supervisor') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SupervisorDashboard()),
+        );
+      }
+      // يمكن إضافة توجيهات للأدوار الأخرى هنا
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('خطأ في اسم المستخدم أو كلمة المرور')),
+      );
+    }
   }
 
   @override
@@ -71,11 +100,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 40),
                 
-                // حقل الرقم الجامعي
+                // حقل اسم المستخدم
                 _buildTextField(
-                  controller: _idController,
-                  label: 'ادخل الرقم الجامعي',
-                  hint: 'ادخل الرقم الجامعي',
+                  controller: _usernameController,
+                  label: 'اسم المستخدم',
+                  hint: 'ادخل اسم المستخدم',
                   icon: Icons.person_outline,
                 ),
                 const SizedBox(height: 20),
@@ -83,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // حقل كلمة المرور
                 _buildTextField(
                   controller: _passwordController,
-                  label: 'ادخل كلمة المرور',
+                  label: 'كلمة المرور',
                   hint: 'ادخل كلمة المرور',
                   icon: Icons.lock_outline,
                   isPassword: true,
@@ -115,7 +144,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       elevation: 0,
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
                         : const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
