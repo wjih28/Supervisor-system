@@ -10,13 +10,20 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
 
   // تهيئة Supabase
-  try {
-    await Supabase.initialize(
-      url: dotenv.env['SUPABASE_URL'] ?? '',
-      anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
-    );
-  } catch (e) {
-    debugPrint('Supabase initialization failed: $e');
+  final supabaseUrl = dotenv.env['SUPABASE_URL'];
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'];
+
+  if (supabaseUrl == null || supabaseAnonKey == null || supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+    debugPrint('⚠️ خطأ: لم يتم العثور على إعدادات Supabase في ملف .env');
+  } else {
+    try {
+      await Supabase.initialize(
+        url: supabaseUrl,
+        anonKey: supabaseAnonKey,
+      );
+    } catch (e) {
+      debugPrint('❌ فشل تهيئة Supabase: $e');
+    }
   }
 
   runApp(const GraduationApp());
