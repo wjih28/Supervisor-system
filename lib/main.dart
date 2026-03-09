@@ -12,8 +12,9 @@ Future<void> main() async {
       anonKey:
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1YWt3b2doaHhvb2JjZ2NrbnNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MjAyNTMsImV4cCI6MjA4MTk5NjI1M30.OYmQVRGhirs7cJDI64rRqQZss6RDnof8kABlZNQDHbA",
     );
+    debugPrint('✅ تم تهيئة Supabase بنجاح');
   } catch (e) {
-    debugPrint('Supabase initialization failed: $e');
+    debugPrint('❌ فشل تهيئة Supabase: $e');
   }
 
   runApp(const GraduationApp());
@@ -30,6 +31,7 @@ class GraduationApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         fontFamily: 'Arial',
+        useMaterial3: true,
       ),
       builder: (context, child) {
         return Directionality(
