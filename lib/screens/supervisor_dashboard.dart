@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/models.dart';
+import '../services/supabase_service.dart';
 
 class SupervisorDashboard extends StatefulWidget {
-  const SupervisorDashboard({super.key});
+  final Supervisor? supervisor;
+  const SupervisorDashboard({super.key, this.supervisor});
 
   @override
   State<SupervisorDashboard> createState() => _SupervisorDashboardState();
@@ -11,8 +14,7 @@ class SupervisorDashboard extends StatefulWidget {
 class _SupervisorDashboardState extends State<SupervisorDashboard> {
   final supabase = Supabase.instance.client;
   bool _isLoading = true;
-  String _supervisorName = "د. أحمد";
-  int _totalGroups = 0;
+  List<ResearchGroup> _groups = [];
   int _pendingReviews = 0;
 
   @override
@@ -22,15 +24,21 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
   }
 
   Future<void> _loadDashboardData() async {
+    if (widget.supervisor == null) {
+      setState(() => _isLoading = false);
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
-      // هنا سيتم جلب البيانات الحقيقية من Supabase لاحقاً
-      // حالياً سنحاكي جلب البيانات
-      await Future.delayed(const Duration(seconds: 1));
+      // جلب المجموعات الحقيقية من قاعدة البيانات
+      final groups = await SupabaseService.getGroupsBySupervisor(widget.supervisor!.id!);
       
       setState(() {
-        _totalGroups = 8;
-        _pendingReviews = 3;
+        _groups = groups;
+        _totalGroups = groups.length;
+        // حالياً سنفترض أن المجموعات التي حالتها ليست "مكتملة" تحتاج مراجعة
+        _pendingReviews = groups.where((g) => g.stateId != 3).length; 
         _isLoading = false;
       });
     } catch (e) {
@@ -38,6 +46,8 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
       setState(() => _isLoading = false);
     }
   }
+
+  int _totalGroups = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +70,9 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
                   const SizedBox(height: 30),
                   _buildSectionHeader('المجموعات التي تشرف عليها', Icons.group_work_rounded),
                   const SizedBox(height: 15),
-                  _buildProjectsList(),
+                  _groups.isEmpty 
+                    ? _buildEmptyState()
+                    : _buildProjectsList(),
                 ],
               ),
             ),
@@ -86,31 +98,11 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
         style: TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold, fontSize: 20),
       ),
       actions: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.notifications_outlined, color: Color(0xFF64748B), size: 28),
-              onPressed: () {},
-            ),
-            Positioned(
-              right: 12,
-              top: 12,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                child: const Text('3', style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ],
+        IconButton(
+          icon: const Icon(Icons.logout, color: Colors.red),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        const SizedBox(width: 8),
-        const CircleAvatar(
-          radius: 18,
-          backgroundColor: Color(0xFFE2E8F0),
-          child: Icon(Icons.person, color: Color(0xFF64748B)),
-        ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 10),
       ],
     );
   }
@@ -120,12 +112,14 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'مرحباً، $_supervisorName 👋',
+          'مرحباً، ${widget.supervisor?.name ?? "المشرف"} 👋',
           style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
         ),
         const SizedBox(height: 6),
         Text(
-          'لديك $_pendingReviews مجموعات تنتظر مراجعتك اليوم.',
+          _pendingReviews > 0 
+            ? 'لديك $_pendingReviews مجموعات تحتاج مراجعتك.'
+            : 'كل المجموعات محدثة حالياً.',
           style: const TextStyle(color: Color(0xFF64748B), fontSize: 15),
         ),
       ],
@@ -137,7 +131,7 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
       children: [
         _buildStatCard('إجمالي المجموعات', _totalGroups.toString(), Icons.groups_rounded, Colors.blue),
         const SizedBox(width: 15),
-        _buildStatCard('قيد المراجعة', _pendingReviews.toString(), Icons.pending_actions_rounded, Colors.orange),
+        _buildStatCard('تحتاج مراجعة', _pendingReviews.toString(), Icons.pending_actions_rounded, Colors.orange),
       ],
     );
   }
@@ -184,31 +178,30 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
     );
   }
 
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: Column(
+          children: [
+            Icon(Icons.group_off_outlined, size: 60, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text('لا توجد مجموعات مرتبطة بك حالياً', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildProjectsList() {
     return Column(
-      children: [
-        _buildProjectCard(
-          'نظام إدارة المستشفيات الذكي',
-          'المجموعة 1',
-          0.75,
-          'بانتظار مراجعة الفصل الثالث',
-          Colors.blue,
-        ),
-        _buildProjectCard(
-          'تطبيق التمويل اللامركزي',
-          'المجموعة 5',
-          0.40,
-          'قيد العمل على الفصل الثاني',
-          Colors.orange,
-        ),
-        _buildProjectCard(
-          'نظام إدارة المكتبات',
-          'المجموعة 12',
-          1.0,
-          'تم الانتهاء من المشروع',
-          Colors.green,
-        ),
-      ],
+      children: _groups.map((group) => _buildProjectCard(
+        group.name,
+        'المجموعة ${group.id}',
+        0.5, // قيمة افتراضية للتقدم حالياً
+        group.stateId == 3 ? 'مكتمل' : 'قيد العمل',
+        group.stateId == 3 ? Colors.green : Colors.blue,
+      )).toList(),
     );
   }
 

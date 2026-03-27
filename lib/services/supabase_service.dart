@@ -8,11 +8,13 @@ class SupabaseService {
   static Future<Map<String, dynamic>?> login(String username, String password) async {
     try {
       // 1. التحقق من جدول الطلاب
+      // ملاحظة: في قاعدة البيانات الحالية، يبدو أن تسجيل دخول الطالب يعتمد على البريد الإلكتروني أو رقم الكلية
+      // سنحاول المطابقة مع البريد الإلكتروني أو الاسم حالياً بناءً على البيانات المتاحة
       final studentResponse = await client
           .from('student')
           .select()
-          .eq('stud_username', username)
-          .eq('stud_password', password)
+          .or('stud_email.eq.$username,stud_name.eq.$username')
+          .eq('stud_pass', password)
           .maybeSingle();
       
       if (studentResponse != null) {
@@ -26,8 +28,8 @@ class SupabaseService {
       final supervisorResponse = await client
           .from('supervisor')
           .select()
-          .eq('sprvsr_username', username)
-          .eq('sprvsr_password', password)
+          .or('sprvsr_email.eq.$username,sprvsr_username.eq.$username')
+          .eq('sprvsr_pass', password)
           .maybeSingle();
       
       if (supervisorResponse != null) {
@@ -37,8 +39,6 @@ class SupabaseService {
         };
       }
 
-      // يمكن إضافة باقي الأدوار هنا (عميد، رئيس قسم، إلخ) بنفس الطريقة
-      
       return null;
     } catch (e) {
       print('Login Error: $e');
@@ -64,11 +64,10 @@ class SupabaseService {
   // جلب بيانات المجموعة لطالب معين
   static Future<ResearchGroup?> getGroupByStudent(int studentId) async {
     try {
-      // هذا الاستعلام يفترض وجود علاقة في قاعدة البيانات بين الطالب والمجموعة
       final response = await client
           .from('groups')
           .select()
-          .filter('id_stud1', 'eq', studentId) // أو id_stud2, id_stud3 حسب المخطط
+          .or('id_stud1.eq.$studentId,id_stud2.eq.$studentId,id_stud3.eq.$studentId')
           .maybeSingle();
       
       if (response == null) return null;

@@ -2,7 +2,8 @@ class Student {
   final int? id;
   final String name;
   final String? email;
-  final String? username;
+  final String? password;
+  final int? collegeNum;
   final int? programId;
   final int? groupId;
 
@@ -10,7 +11,8 @@ class Student {
     this.id,
     required this.name,
     this.email,
-    this.username,
+    this.password,
+    this.collegeNum,
     this.programId,
     this.groupId,
   });
@@ -20,7 +22,8 @@ class Student {
       id: json['stud_id'],
       name: json['stud_name'],
       email: json['stud_email'],
-      username: json['stud_username'],
+      password: json['stud_pass'],
+      collegeNum: json['stud_college_num'],
       programId: json['id_program'],
       groupId: json['id_group'],
     );
@@ -30,7 +33,8 @@ class Student {
     return {
       'stud_name': name,
       'stud_email': email,
-      'stud_username': username,
+      'stud_pass': password,
+      'stud_college_num': collegeNum,
       'id_program': programId,
       'id_group': groupId,
     };
@@ -41,6 +45,7 @@ class Supervisor {
   final int? id;
   final String name;
   final String? email;
+  final String? password;
   final String? username;
   final bool? isActive;
 
@@ -48,6 +53,7 @@ class Supervisor {
     this.id,
     required this.name,
     this.email,
+    this.password,
     this.username,
     this.isActive,
   });
@@ -57,6 +63,7 @@ class Supervisor {
       id: json['sprvsr_id'],
       name: json['sprvsr_name'],
       email: json['sprvsr_email'],
+      password: json['sprvsr_pass'],
       username: json['sprvsr_username'],
       isActive: json['sprvsr_isactive'],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/supabase_service.dart';
+import '../models/models.dart';
 import 'student_dashboard.dart';
 import 'supervisor_dashboard.dart';
 
@@ -34,19 +35,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (result != null) {
       final String role = result['role'];
+      final user = result['user'];
       
       if (role == 'student') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const StudentDashboard()),
+          MaterialPageRoute(builder: (context) => StudentDashboard(student: user as Student)),
         );
       } else if (role == 'supervisor') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SupervisorDashboard()),
+          MaterialPageRoute(builder: (context) => SupervisorDashboard(supervisor: user as Supervisor)),
         );
       }
-      // يمكن إضافة توجيهات للأدوار الأخرى هنا
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('خطأ في اسم المستخدم أو كلمة المرور')),
@@ -77,7 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // الشعار
                 Image.network(
                   'https://upload.wikimedia.org/wikipedia/ar/thumb/0/0d/UST_Yemen_Logo.png/200px-UST_Yemen_Logo.png',
                   height: 120,
@@ -99,17 +99,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(color: Colors.grey, fontSize: 16),
                 ),
                 const SizedBox(height: 40),
-                
-                // حقل اسم المستخدم
                 _buildTextField(
                   controller: _usernameController,
-                  label: 'اسم المستخدم',
-                  hint: 'ادخل اسم المستخدم',
+                  label: 'اسم المستخدم أو البريد الإلكتروني',
+                  hint: 'ادخل اسم المستخدم أو البريد',
                   icon: Icons.person_outline,
                 ),
                 const SizedBox(height: 20),
-                
-                // حقل كلمة المرور
                 _buildTextField(
                   controller: _passwordController,
                   label: 'كلمة المرور',
@@ -117,20 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   icon: Icons.lock_outline,
                   isPassword: true,
                 ),
-                
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      'هل نسيت كلمة المرور ؟',
-                      style: TextStyle(color: Color(0xFF2D62ED)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                
-                // زر تسجيل الدخول
+                const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
                   height: 55,
@@ -164,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ],
                           ),
-                  ),
+                    ),
                 ),
                 const SizedBox(height: 30),
                 const Text(
