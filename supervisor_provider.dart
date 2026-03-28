@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/models.dart';
-import '../services/supabase_service.dart';
+import 'package:graduation_research_management/models/models.dart';
+import 'package:graduation_research_management/services/supabase_service.dart';
 
 /// مزود (Provider) لإدارة حالة المشرف والبيانات المتعلقة به
 class SupervisorProvider extends ChangeNotifier {
@@ -14,6 +14,8 @@ class SupervisorProvider extends ChangeNotifier {
   bool _isLoadingGroups = false;
   bool _isLoadingStatistics = false;
   bool _isLoadingComments = false;
+  bool _isLoadingFiles = false;
+  bool _isLoadingStages = false;
   
   // البيانات المخزنة مؤقتاً
   Map<int, List<ReviewComment>> _groupComments = {};
@@ -33,6 +35,8 @@ class SupervisorProvider extends ChangeNotifier {
   bool get isLoadingGroups => _isLoadingGroups;
   bool get isLoadingStatistics => _isLoadingStatistics;
   bool get isLoadingComments => _isLoadingComments;
+  bool get isLoadingFiles => _isLoadingFiles;
+  bool get isLoadingStages => _isLoadingStages;
   String get searchQuery => _searchQuery;
   String get selectedFilter => _selectedFilter;
 
@@ -111,14 +115,19 @@ class SupervisorProvider extends ChangeNotifier {
       return _groupFiles[groupId]!;
     }
 
+    _isLoadingFiles = true;
+    notifyListeners();
+
     try {
       final files = await SupabaseService.getFilesByGroup(groupId);
       _groupFiles[groupId] = files;
-      notifyListeners();
       return files;
     } catch (e) {
       print('Error loading files: $e');
       return [];
+    } finally {
+      _isLoadingFiles = false;
+      notifyListeners();
     }
   }
 
@@ -128,14 +137,19 @@ class SupervisorProvider extends ChangeNotifier {
       return _groupStages[groupId]!;
     }
 
+    _isLoadingStages = true;
+    notifyListeners();
+
     try {
       final stages = await SupabaseService.getProjectStages(groupId);
       _groupStages[groupId] = stages;
-      notifyListeners();
       return stages;
     } catch (e) {
       print('Error loading project stages: $e');
       return [];
+    } finally {
+      _isLoadingStages = false;
+      notifyListeners();
     }
   }
 
