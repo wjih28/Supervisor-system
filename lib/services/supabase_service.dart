@@ -7,39 +7,50 @@ class SupabaseService {
   // تسجيل الدخول الموحد والتحقق من الدور
   static Future<Map<String, dynamic>?> login(String username, String password) async {
     try {
+      // Normalize username input by trimming whitespace
+      final trimmedUsername = username.trim();
+      print('Attempting login for username: $trimmedUsername (original: $username) with password: $password');
+
       // 1. التحقق من جدول الطلاب
+      print('Checking student table...');
       final studentResponse = await client
           .from('student')
           .select()
-          .or('stud_email.eq.$username,stud_name.eq.$username')
+          .or('stud_email.eq.$trimmedUsername,stud_name.eq.$trimmedUsername')
           .eq('stud_pass', password)
           .maybeSingle();
       
       if (studentResponse != null) {
+        print('Student login successful: ${studentResponse["stud_name"]}');
         return {
           'role': 'student',
           'user': Student.fromJson(studentResponse),
         };
       }
+      print('Student login failed for username: $trimmedUsername. Response: $studentResponse');
 
       // 2. التحقق من جدول المشرفين
+      print('Checking supervisor table...');
       final supervisorResponse = await client
           .from('supervisor')
           .select()
-          .or('sprvsr_email.eq.$username,sprvsr_username.eq.$username')
+          .or('sprvsr_email.eq.$trimmedUsername,sprvsr_username.eq.$trimmedUsername')
           .eq('sprvsr_pass', password)
           .maybeSingle();
       
       if (supervisorResponse != null) {
+        print('Supervisor login successful: ${supervisorResponse["sprvsr_name"]}');
         return {
           'role': 'supervisor',
           'user': Supervisor.fromJson(supervisorResponse),
         };
       }
+      print('Supervisor login failed for username: $trimmedUsername. Response: $supervisorResponse');
 
+      print('Login failed: Invalid username or password for both student and supervisor.');
       return null;
     } catch (e) {
-      print('Login Error: $e');
+      print('Login Error in SupabaseService: $e');
       return null;
     }
   }
