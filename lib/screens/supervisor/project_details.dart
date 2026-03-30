@@ -21,7 +21,7 @@ class ProjectDetails extends StatefulWidget {
 class _ProjectDetailsState extends State<ProjectDetails> {
   ResearchGroup? _project;
   List<Student> _students = [];
-  List<ProjectFeedback> _feedbacks = []; // Assuming ProjectFeedback model exists
+  List<ProjectFeedback> _feedbacks = [];
   bool _isLoading = true;
 
   @override
@@ -35,8 +35,8 @@ class _ProjectDetailsState extends State<ProjectDetails> {
 
     _project = await SupabaseService.getProjectById(widget.projectId);
     if (_project != null) {
-      _students = await SupabaseService.getGroupStudents(_project!.id!); // Assuming getGroupStudents exists
-      _feedbacks = await SupabaseService.getProjectFeedback(widget.projectId); // Assuming getProjectFeedback exists
+      _students = await SupabaseService.getGroupStudents(_project!.id!);
+      _feedbacks = await SupabaseService.getProjectFeedback(widget.projectId);
     }
 
     setState(() => _isLoading = false);
@@ -44,10 +44,17 @@ class _ProjectDetailsState extends State<ProjectDetails> {
 
   Future<void> _updateStatus(String newStatus) async {
     final success =
+<<<<<<< Updated upstream
         await SupabaseService.updateGroupStatus(widget.projectId, newStatus, _project?.progress ?? 0.0); // Changed to updateGroupStatus
     if (success && mounted) {
       setState(() {
         _project = _project?.copyWith(status: newStatus); // Use copyWith
+=======
+        await SupabaseService.updateProjectStatus(widget.projectId, newStatus);
+    if (success && mounted) {
+      setState(() {
+        _project?.status = newStatus;
+>>>>>>> Stashed changes
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديث حالة المشروع بنجاح')),
@@ -56,12 +63,20 @@ class _ProjectDetailsState extends State<ProjectDetails> {
   }
 
   Future<void> _updateStage(String newStage) async {
+<<<<<<< Updated upstream
     // Assuming SupabaseService.updateProjectStage exists and updates currentStage
     final success =
         await SupabaseService.updateProjectStage(widget.projectId, newStage); // Assuming this method exists
     if (success && mounted) {
       setState(() {
         _project = _project?.copyWith(currentStage: newStage); // Use copyWith
+=======
+    final success =
+        await SupabaseService.updateProjectStage(widget.projectId, newStage);
+    if (success && mounted) {
+      setState(() {
+        _project?.currentStage = newStage;
+>>>>>>> Stashed changes
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديث مرحلة المشروع بنجاح')),
@@ -276,19 +291,31 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                                 builder: (context) => ProjectFiles(
                                   projectId: widget.projectId,
                                   supervisorId: widget.supervisorId,
+<<<<<<< Updated upstream
                                 ),
                               ),
                             );
+=======
+                                  projectTitle: _project?.name ?? '',
+                                ),
+                              ),
+                            ).then((_) => _loadData());
+>>>>>>> Stashed changes
                           },
                           icon: const Icon(Icons.folder_open),
                           label: const Text('الملفات'),
                           style: ElevatedButton.styleFrom(
+<<<<<<< Updated upstream
                             foregroundColor: Colors.white,
                             backgroundColor: const Color(0xFF2D62ED),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
+=======
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+>>>>>>> Stashed changes
                           ),
                         ),
                       ),
@@ -302,6 +329,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                                 builder: (context) => AddFeedback(
                                   projectId: widget.projectId,
                                   supervisorId: widget.supervisorId,
+<<<<<<< Updated upstream
                                 ),
                               ),
                             );
@@ -315,11 +343,24 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
+=======
+                                  projectTitle: _project?.name ?? '',
+                                ),
+                              ),
+                            ).then((_) => _loadData());
+                          },
+                          icon: const Icon(Icons.add_comment),
+                          label: const Text('إضافة ملاحظة'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+>>>>>>> Stashed changes
                           ),
                         ),
                       ),
                     ],
                   ),
+<<<<<<< Updated upstream
                   const SizedBox(height: 16),
 
                   // قسم الملاحظات
@@ -380,6 +421,82 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                       ),
                     ),
                   ),
+=======
+                  const SizedBox(height: 24),
+
+                  // الملاحظات السابقة
+                  const Text(
+                    'الملاحظات السابقة',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ..._feedbacks.map((feedback) => Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  if (!feedback.isResolved)
+                                    const Chip(
+                                      label: Text('قيد الانتظار'),
+                                      backgroundColor: Colors.orange,
+                                      labelStyle: TextStyle(
+                                          color: Colors.white, fontSize: 10),
+                                    ),
+                                  Text(
+                                    _getStageText(feedback.stage),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                feedback.notes,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _formatDate(feedback.createdAt),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                              if (!feedback.isResolved)
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: TextButton(
+                                    onPressed: () async {
+                                      await SupabaseService.resolveFeedback(
+                                          feedback.id!);
+                                      _loadData();
+                                    },
+                                    child: const Text('تم الحل'),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      )),
+                  if (_feedbacks.isEmpty)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: Text('لا توجد ملاحظات حالياً'),
+                      ),
+                    ),
+>>>>>>> Stashed changes
                 ],
               ),
             ),
@@ -392,6 +509,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
     required Color color,
     required IconData icon,
   }) {
+<<<<<<< Updated upstream
     return Card(
       color: color.withOpacity(0.1),
       child: Padding(
@@ -414,12 +532,60 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                 color: color,
               ),
             ),
+=======
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showStatusDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تغيير حالة المشروع'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildStatusOption('pending_approval', 'قيد المراجعة'),
+            _buildStatusOption('approved', 'معتمد'),
+            _buildStatusOption('in_progress', 'قيد التنفيذ'),
+            _buildStatusOption('completed', 'مكتمل'),
+>>>>>>> Stashed changes
           ],
         ),
       ),
     );
   }
 
+<<<<<<< Updated upstream
   String _getStatusText(String? status) {
     switch (status) {
       case 'pending':
@@ -432,11 +598,73 @@ class _ProjectDetailsState extends State<ProjectDetails> {
         return 'متأخرة';
       default:
         return 'غير معروف';
+=======
+  Widget _buildStatusOption(String status, String label) {
+    return ListTile(
+      title: Text(label),
+      trailing: Radio<String>(
+        value: status,
+        groupValue: _project?.status,
+        onChanged: (value) {
+          if (value != null) _updateStatus(value);
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  void _showStageDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تغيير المرحلة الحالية'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildStageOption('proposal', 'المقترح'),
+            _buildStageOption('plan', 'الخطة'),
+            _buildStageOption('field', 'الدراسة الميدانية'),
+            _buildStageOption('writing', 'الكتابة'),
+            _buildStageOption('final', 'النهائي'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStageOption(String stage, String label) {
+    return ListTile(
+      title: Text(label),
+      trailing: Radio<String>(
+        value: stage,
+        groupValue: _project?.currentStage,
+        onChanged: (value) {
+          if (value != null) _updateStage(value);
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  String _getStatusText(String? status) {
+    switch (status) {
+      case 'in_progress':
+        return 'قيد التنفيذ';
+      case 'pending_approval':
+        return 'قيد المراجعة';
+      case 'approved':
+        return 'معتمد';
+      case 'completed':
+        return 'مكتمل';
+      default:
+        return status ?? 'غير محدد';
+>>>>>>> Stashed changes
     }
   }
 
   Color _getStatusColor(String? status) {
     switch (status) {
+<<<<<<< Updated upstream
       case 'pending':
         return Colors.grey;
       case 'in_progress':
@@ -445,12 +673,23 @@ class _ProjectDetailsState extends State<ProjectDetails> {
         return Colors.green;
       case 'delayed':
         return Colors.red;
+=======
+      case 'in_progress':
+        return Colors.orange;
+      case 'pending_approval':
+        return Colors.purple;
+      case 'approved':
+        return Colors.blue;
+      case 'completed':
+        return Colors.green;
+>>>>>>> Stashed changes
       default:
         return Colors.grey;
     }
   }
 
   String _getStageText(String? stage) {
+<<<<<<< Updated upstream
     return stage ?? 'غير محدد';
   }
 
@@ -605,5 +844,26 @@ class ProjectFeedback {
       supervisorName: json['supervisor_name'], // Adjust according to your Supabase join/view
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
     );
+=======
+    switch (stage) {
+      case 'proposal':
+        return 'المقترح';
+      case 'plan':
+        return 'الخطة';
+      case 'field':
+        return 'الدراسة الميدانية';
+      case 'writing':
+        return 'الكتابة';
+      case 'final':
+        return 'النهائي';
+      default:
+        return stage ?? 'غير محدد';
+    }
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    return '${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute}';
+>>>>>>> Stashed changes
   }
 }

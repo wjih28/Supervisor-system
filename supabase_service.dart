@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/models.dart';
+import 'lib/models/models.dart';
 
 class SupabaseService {
   static final SupabaseClient client = Supabase.instance.client;
@@ -7,7 +7,8 @@ class SupabaseService {
   // ============ المصادقة والتحقق ============
 
   /// تسجيل الدخول الموحد والتحقق من الدور
-  static Future<Map<String, dynamic>?> login(String username, String password) async {
+  static Future<Map<String, dynamic>?> login(
+      String username, String password) async {
     try {
       // 1. التحقق من جدول الطلاب
       final studentResponse = await client
@@ -16,7 +17,7 @@ class SupabaseService {
           .eq('stud_username', username)
           .eq('stud_password', password)
           .maybeSingle();
-      
+
       if (studentResponse != null) {
         return {
           'role': 'student',
@@ -31,7 +32,7 @@ class SupabaseService {
           .eq('sprvsr_username', username)
           .eq('sprvsr_password', password)
           .maybeSingle();
-      
+
       if (supervisorResponse != null) {
         return {
           'role': 'supervisor',
@@ -40,7 +41,7 @@ class SupabaseService {
       }
 
       // يمكن إضافة باقي الأدوار هنا (عميد، رئيس قسم، إلخ) بنفس الطريقة
-      
+
       return null;
     } catch (e) {
       print('Login Error: $e');
@@ -51,15 +52,18 @@ class SupabaseService {
   // ============ وظائف المجموعات والمشاريع ============
 
   /// جلب المجموعات المرتبطة بمشرف معين
-  static Future<List<ResearchGroup>> getGroupsBySupervisor(int supervisorId) async {
+  static Future<List<ResearchGroup>> getGroupsBySupervisor(
+      int supervisorId) async {
     try {
       final response = await client
           .from('groups')
           .select()
           .eq('id_sprvsr', supervisorId)
           .order('updated_at', ascending: false);
-      
-      return (response as List).map((json) => ResearchGroup.fromJson(json)).toList();
+
+      return (response as List)
+          .map((json) => ResearchGroup.fromJson(json))
+          .toList();
     } catch (e) {
       print('Fetch Groups Error: $e');
       return [];
@@ -73,9 +77,10 @@ class SupabaseService {
       final response = await client
           .from('groups')
           .select()
-          .filter('id_stud1', 'eq', studentId) // أو id_stud2, id_stud3 حسب المخطط
+          .filter(
+              'id_stud1', 'eq', studentId) // أو id_stud2, id_stud3 حسب المخطط
           .maybeSingle();
-      
+
       if (response == null) return null;
       return ResearchGroup.fromJson(response);
     } catch (e) {
@@ -92,7 +97,7 @@ class SupabaseService {
           .select()
           .eq('group_id', groupId)
           .maybeSingle();
-      
+
       if (response == null) return null;
       return ResearchGroup.fromJson(response);
     } catch (e) {
@@ -111,8 +116,10 @@ class SupabaseService {
           .select()
           .eq('id_group', groupId)
           .order('uploaded_at', ascending: false);
-      
-      return (response as List).map((json) => ResearchFile.fromJson(json)).toList();
+
+      return (response as List)
+          .map((json) => ResearchFile.fromJson(json))
+          .toList();
     } catch (e) {
       print('Fetch Files Error: $e');
       return [];
@@ -120,7 +127,8 @@ class SupabaseService {
   }
 
   /// جلب الملفات حسب المرحلة
-  static Future<List<ResearchFile>> getFilesByStage(int groupId, String stage) async {
+  static Future<List<ResearchFile>> getFilesByStage(
+      int groupId, String stage) async {
     try {
       final response = await client
           .from('research_files')
@@ -128,8 +136,10 @@ class SupabaseService {
           .eq('id_group', groupId)
           .eq('file_stage', stage)
           .order('uploaded_at', ascending: false);
-      
-      return (response as List).map((json) => ResearchFile.fromJson(json)).toList();
+
+      return (response as List)
+          .map((json) => ResearchFile.fromJson(json))
+          .toList();
     } catch (e) {
       print('Fetch Files By Stage Error: $e');
       return [];
@@ -139,9 +149,7 @@ class SupabaseService {
   /// تحميل ملف جديد
   static Future<bool> uploadFile(ResearchFile file) async {
     try {
-      await client
-          .from('research_files')
-          .insert(file.toJson());
+      await client.from('research_files').insert(file.toJson());
       return true;
     } catch (e) {
       print('Upload File Error: $e');
@@ -159,8 +167,10 @@ class SupabaseService {
           .select()
           .eq('id_group', groupId)
           .order('created_at', ascending: false);
-      
-      return (response as List).map((json) => ReviewComment.fromJson(json)).toList();
+
+      return (response as List)
+          .map((json) => ReviewComment.fromJson(json))
+          .toList();
     } catch (e) {
       print('Fetch Comments Error: $e');
       return [];
@@ -170,9 +180,7 @@ class SupabaseService {
   /// إضافة ملاحظة جديدة
   static Future<bool> addComment(ReviewComment comment) async {
     try {
-      await client
-          .from('review_comments')
-          .insert(comment.toJson());
+      await client.from('review_comments').insert(comment.toJson());
       return true;
     } catch (e) {
       print('Add Comment Error: $e');
@@ -181,7 +189,8 @@ class SupabaseService {
   }
 
   /// تحديث ملاحظة موجودة
-  static Future<bool> updateComment(int commentId, ReviewComment comment) async {
+  static Future<bool> updateComment(
+      int commentId, ReviewComment comment) async {
     try {
       await client
           .from('review_comments')
@@ -197,10 +206,7 @@ class SupabaseService {
   /// حذف ملاحظة
   static Future<bool> deleteComment(int commentId) async {
     try {
-      await client
-          .from('review_comments')
-          .delete()
-          .eq('comment_id', commentId);
+      await client.from('review_comments').delete().eq('comment_id', commentId);
       return true;
     } catch (e) {
       print('Delete Comment Error: $e');
@@ -218,8 +224,10 @@ class SupabaseService {
           .select()
           .eq('id_group', groupId)
           .order('start_date', ascending: true);
-      
-      return (response as List).map((json) => ProjectStage.fromJson(json)).toList();
+
+      return (response as List)
+          .map((json) => ProjectStage.fromJson(json))
+          .toList();
     } catch (e) {
       print('Fetch Project Stages Error: $e');
       return [];
@@ -227,16 +235,14 @@ class SupabaseService {
   }
 
   /// تحديث حالة المرحلة
-  static Future<bool> updateStageStatus(int stageId, String status, double completionPercentage) async {
+  static Future<bool> updateStageStatus(
+      int stageId, String status, double completionPercentage) async {
     try {
-      await client
-          .from('project_stages')
-          .update({
-            'stage_status': status,
-            'completion_percentage': completionPercentage,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('stage_id', stageId);
+      await client.from('project_stages').update({
+        'stage_status': status,
+        'completion_percentage': completionPercentage,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('stage_id', stageId);
       return true;
     } catch (e) {
       print('Update Stage Status Error: $e');
@@ -245,16 +251,14 @@ class SupabaseService {
   }
 
   /// تحديث حالة المجموعة
-  static Future<bool> updateGroupStatus(int groupId, String status, double progress) async {
+  static Future<bool> updateGroupStatus(
+      int groupId, String status, double progress) async {
     try {
-      await client
-          .from('groups')
-          .update({
-            'group_status': status,
-            'group_progress': progress,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('group_id', groupId);
+      await client.from('groups').update({
+        'group_status': status,
+        'group_progress': progress,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('group_id', groupId);
       return true;
     } catch (e) {
       print('Update Group Status Error: $e');
@@ -265,20 +269,23 @@ class SupabaseService {
   // ============ وظائف الإشعارات ============
 
   /// جلب الإشعارات للمشرف
-  static Future<List<Notification>> getNotifications(int supervisorId, {bool unreadOnly = false}) async {
+  static Future<List<Notification>> getNotifications(int supervisorId,
+      {bool unreadOnly = false}) async {
     try {
       var query = client
           .from('notifications')
           .select()
           .eq('id_sprvsr', supervisorId)
           .order('created_at', ascending: false);
-      
+
       if (unreadOnly) {
-        query = query.eq('is_read', false);
+        query = query.filter('is_read', 'eq', false);
       }
-      
+
       final response = await query;
-      return (response as List).map((json) => Notification.fromJson(json)).toList();
+      return (response as List)
+          .map((json) => Notification.fromJson(json))
+          .toList();
     } catch (e) {
       print('Fetch Notifications Error: $e');
       return [];
@@ -290,8 +297,7 @@ class SupabaseService {
     try {
       await client
           .from('notifications')
-          .update({'is_read': true})
-          .eq('notification_id', notificationId);
+          .update({'is_read': true}).eq('notification_id', notificationId);
       return true;
     } catch (e) {
       print('Mark Notification As Read Error: $e');
@@ -302,9 +308,7 @@ class SupabaseService {
   /// إنشاء إشعار جديد
   static Future<bool> createNotification(Notification notification) async {
     try {
-      await client
-          .from('notifications')
-          .insert(notification.toJson());
+      await client.from('notifications').insert(notification.toJson());
       return true;
     } catch (e) {
       print('Create Notification Error: $e');
@@ -315,26 +319,32 @@ class SupabaseService {
   // ============ وظائف الإحصائيات والتقارير ============
 
   /// جلب إحصائيات المشرف
-  static Future<Map<String, dynamic>?> getSupervisorStatistics(int supervisorId) async {
+  static Future<Map<String, dynamic>?> getSupervisorStatistics(
+      int supervisorId) async {
     try {
       final groups = await getGroupsBySupervisor(supervisorId);
-      
+
       int totalGroups = groups.length;
       int completedGroups = groups.where((g) => g.status == 'completed').length;
-      int inProgressGroups = groups.where((g) => g.status == 'in_progress').length;
+      int inProgressGroups =
+          groups.where((g) => g.status == 'in_progress').length;
       int delayedGroups = groups.where((g) => g.status == 'delayed').length;
-      
-      double averageProgress = groups.isEmpty 
-          ? 0.0 
-          : groups.fold(0.0, (sum, g) => sum + (g.progress ?? 0.0)) / groups.length;
-      
+
+      double averageProgress = groups.where((g) => g != null).isEmpty
+          ? 0.0
+          : groups
+                  .where((g) => g != null)
+                  .fold(0.0, (sum, g) => sum + (g.progress ?? 0.0)) /
+              groups.where((g) => g != null).length;
+
       return {
         'totalGroups': totalGroups,
         'completedGroups': completedGroups,
         'inProgressGroups': inProgressGroups,
         'delayedGroups': delayedGroups,
         'averageProgress': averageProgress,
-        'completionRate': totalGroups == 0 ? 0.0 : (completedGroups / totalGroups) * 100,
+        'completionRate':
+            totalGroups == 0 ? 0.0 : (completedGroups / totalGroups) * 100,
       };
     } catch (e) {
       print('Get Statistics Error: $e');
@@ -345,11 +355,9 @@ class SupabaseService {
   /// جلب الطلاب في مجموعة معينة
   static Future<List<Student>> getStudentsByGroup(int groupId) async {
     try {
-      final response = await client
-          .from('student')
-          .select()
-          .eq('id_group', groupId);
-      
+      final response =
+          await client.from('student').select().eq('id_group', groupId);
+
       return (response as List).map((json) => Student.fromJson(json)).toList();
     } catch (e) {
       print('Fetch Students By Group Error: $e');
@@ -360,15 +368,18 @@ class SupabaseService {
   // ============ وظائف البحث والتصفية ============
 
   /// البحث عن مجموعات
-  static Future<List<ResearchGroup>> searchGroups(int supervisorId, String searchTerm) async {
+  static Future<List<ResearchGroup>> searchGroups(
+      int supervisorId, String searchTerm) async {
     try {
       final response = await client
           .from('groups')
           .select()
           .eq('id_sprvsr', supervisorId)
           .or('group_name.ilike.%$searchTerm%,group_description.ilike.%$searchTerm%');
-      
-      return (response as List).map((json) => ResearchGroup.fromJson(json)).toList();
+
+      return (response as List)
+          .map((json) => ResearchGroup.fromJson(json))
+          .toList();
     } catch (e) {
       print('Search Groups Error: $e');
       return [];
@@ -376,7 +387,8 @@ class SupabaseService {
   }
 
   /// تصفية المجموعات حسب الحالة
-  static Future<List<ResearchGroup>> filterGroupsByStatus(int supervisorId, String status) async {
+  static Future<List<ResearchGroup>> filterGroupsByStatus(
+      int supervisorId, String status) async {
     try {
       final response = await client
           .from('groups')
@@ -384,8 +396,10 @@ class SupabaseService {
           .eq('id_sprvsr', supervisorId)
           .eq('group_status', status)
           .order('updated_at', ascending: false);
-      
-      return (response as List).map((json) => ResearchGroup.fromJson(json)).toList();
+
+      return (response as List)
+          .map((json) => ResearchGroup.fromJson(json))
+          .toList();
     } catch (e) {
       print('Filter Groups By Status Error: $e');
       return [];

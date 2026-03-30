@@ -9,19 +9,18 @@ class SupervisorProvider extends ChangeNotifier {
   List<ResearchGroup> _groups = [];
   List<ResearchGroup> _filteredGroups = [];
   Map<String, dynamic>? _statistics;
-  
+
   // حالات التحميل
   bool _isLoadingGroups = false;
   bool _isLoadingStatistics = false;
   bool _isLoadingComments = false;
   bool _isLoadingFiles = false;
   bool _isLoadingStages = false;
-  
   // البيانات المخزنة مؤقتاً
-  Map<int, List<ReviewComment>> _groupComments = {};
-  Map<int, List<ResearchFile>> _groupFiles = {};
-  Map<int, List<ProjectStage>> _groupStages = {};
-  
+  final Map<int, List<ReviewComment>> _groupComments = {};
+  final Map<int, List<ResearchFile>> _groupFiles = {};
+  final Map<int, List<ProjectStage>> _groupStages = {};
+
   // حالة البحث والتصفية
   String _searchQuery = '';
   String _selectedFilter = 'all';
@@ -30,7 +29,8 @@ class SupervisorProvider extends ChangeNotifier {
 
   Supervisor get supervisor => _supervisor;
   List<ResearchGroup> get groups => _groups;
-  List<ResearchGroup> get filteredGroups => _filteredGroups.isEmpty ? _groups : _filteredGroups;
+  List<ResearchGroup> get filteredGroups =>
+      _filteredGroups.isEmpty ? _groups : _filteredGroups;
   Map<String, dynamic>? get statistics => _statistics;
   bool get isLoadingGroups => _isLoadingGroups;
   bool get isLoadingStatistics => _isLoadingStatistics;
@@ -62,7 +62,8 @@ class SupervisorProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _groups = await SupabaseService.getGroupsBySupervisor(_supervisor.id ?? 0);
+      _groups =
+          await SupabaseService.getGroupsBySupervisor(_supervisor.id ?? 0);
       _filteredGroups = _groups;
     } catch (e) {
       print('Error loading groups: $e');
@@ -78,7 +79,8 @@ class SupervisorProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _statistics = await SupabaseService.getSupervisorStatistics(_supervisor.id ?? 0);
+      _statistics =
+          await SupabaseService.getSupervisorStatistics(_supervisor.id ?? 0);
     } catch (e) {
       print('Error loading statistics: $e');
     } finally {
@@ -192,7 +194,8 @@ class SupervisorProvider extends ChangeNotifier {
 
     // تطبيق التصفية حسب الحالة
     if (status != 'all') {
-      _filteredGroups = _filteredGroups.where((g) => g.status == status).toList();
+      _filteredGroups =
+          _filteredGroups.where((g) => g.status == status).toList();
     }
 
     // تطبيق البحث
@@ -226,13 +229,15 @@ class SupervisorProvider extends ChangeNotifier {
   }
 
   /// تحديث ملاحظة موجودة
-  Future<bool> updateComment(int groupId, int commentId, ReviewComment comment) async {
+  Future<bool> updateComment(
+      int groupId, int commentId, ReviewComment comment) async {
     try {
       final success = await SupabaseService.updateComment(commentId, comment);
       if (success) {
         // تحديث الملاحظات المخزنة مؤقتاً
         if (_groupComments.containsKey(groupId)) {
-          final index = _groupComments[groupId]!.indexWhere((c) => c.id == commentId);
+          final index =
+              _groupComments[groupId]!.indexWhere((c) => c.id == commentId);
           if (index != -1) {
             _groupComments[groupId]![index] = comment;
           }
@@ -265,9 +270,11 @@ class SupervisorProvider extends ChangeNotifier {
   }
 
   /// تحديث حالة المجموعة
-  Future<bool> updateGroupStatus(int groupId, String status, double progress) async {
+  Future<bool> updateGroupStatus(
+      int groupId, String status, double progress) async {
     try {
-      final success = await SupabaseService.updateGroupStatus(groupId, status, progress);
+      final success =
+          await SupabaseService.updateGroupStatus(groupId, status, progress);
       if (success) {
         // تحديث البيانات المحلية
         final index = _groups.indexWhere((g) => g.id == groupId);
@@ -296,9 +303,11 @@ class SupervisorProvider extends ChangeNotifier {
   }
 
   /// تحديث حالة المرحلة
-  Future<bool> updateStageStatus(int stageId, String status, double completionPercentage) async {
+  Future<bool> updateStageStatus(
+      int stageId, String status, double completionPercentage) async {
     try {
-      final success = await SupabaseService.updateStageStatus(stageId, status, completionPercentage);
+      final success = await SupabaseService.updateStageStatus(
+          stageId, status, completionPercentage);
       if (success) {
         notifyListeners();
       }
@@ -343,9 +352,7 @@ class SupervisorProvider extends ChangeNotifier {
     if (!_groupComments.containsKey(groupId)) {
       return 0;
     }
-    return _groupComments[groupId]!
-        .where((c) => c.isResolved == false)
-        .length;
+    return _groupComments[groupId]!.where((c) => c.isResolved == false).length;
   }
 
   /// الحصول على عدد الملفات الجديدة
@@ -365,7 +372,8 @@ class SupervisorProvider extends ChangeNotifier {
     if (_groups.isEmpty) {
       return 0.0;
     }
-    final totalProgress = _groups.fold(0.0, (sum, g) => sum + (g.progress ?? 0.0));
+    final totalProgress =
+        _groups.fold(0.0, (sum, g) => sum + (g.progress ?? 0.0));
     return totalProgress / _groups.length;
   }
 

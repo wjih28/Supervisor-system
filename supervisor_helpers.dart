@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/models.dart';
+import 'package:graduation_research_management/models/models.dart';
 
 /// فئة مساعدة تحتوي على دوال مساعدة لنظام المشرف
 class SupervisorHelpers {
@@ -196,7 +196,8 @@ class SupervisorHelpers {
   /// حساب نسبة التقدم الكلية
   static double calculateOverallProgress(List<ResearchGroup> groups) {
     if (groups.isEmpty) return 0.0;
-    final totalProgress = groups.fold(0.0, (sum, g) => sum + (g.progress ?? 0.0));
+    final totalProgress =
+        groups.fold(0.0, (sum, g) => sum + (g.progress ?? 0.0));
     return totalProgress / groups.length;
   }
 
@@ -250,7 +251,8 @@ class SupervisorHelpers {
 
   /// التحقق من الملاحظات المهمة
   static bool hasImportantComments(List<ReviewComment> comments) {
-    return comments.any((c) => c.commentType == 'issue' && c.isResolved == false);
+    return comments
+        .any((c) => c.commentType == 'issue' && c.isResolved == false);
   }
 
   /// عد الملاحظات حسب النوع
@@ -272,7 +274,8 @@ class SupervisorHelpers {
   /// التحقق من وجود ملفات جديدة
   static bool hasNewFiles(List<ResearchFile> files) {
     final oneDayAgo = DateTime.now().subtract(const Duration(days: 1));
-    return files.any((f) => f.uploadedAt != null && f.uploadedAt!.isAfter(oneDayAgo));
+    return files
+        .any((f) => f.uploadedAt != null && f.uploadedAt!.isAfter(oneDayAgo));
   }
 
   /// الحصول على الملفات المرتبة حسب التاريخ
@@ -287,7 +290,8 @@ class SupervisorHelpers {
   }
 
   /// الحصول على الملفات حسب النوع
-  static Map<String, List<ResearchFile>> groupFilesByType(List<ResearchFile> files) {
+  static Map<String, List<ResearchFile>> groupFilesByType(
+      List<ResearchFile> files) {
     final grouped = <String, List<ResearchFile>>{};
 
     for (final file in files) {

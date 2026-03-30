@@ -40,7 +40,7 @@ class DeanDashboard extends StatelessWidget {
               style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 24),
-            
+
             // ملخص الكلية الكلي
             Container(
               padding: const EdgeInsets.all(20),
@@ -57,30 +57,38 @@ class DeanDashboard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
             const Text(
               'أداء الأقسام',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             // قائمة الأقسام ونسب إنجازها
             _buildDepartmentCard('قسم علوم الحاسوب', 0.85, '42 بحثاً'),
             _buildDepartmentCard('قسم تقنية المعلومات', 0.70, '38 بحثاً'),
             _buildDepartmentCard('قسم نظم المعلومات', 0.55, '45 بحثاً'),
             _buildDepartmentCard('قسم هندسة البرمجيات', 0.40, '31 بحثاً'),
-            
+
             const SizedBox(height: 24),
             const Text(
               'تنبيهات إدارية',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             // تنبيهات العميد
-            _buildAlertItem('مواعيد المناقشات', 'تبدأ مناقشات المرحلة النهائية بعد 10 أيام', Icons.calendar_today, Colors.blue),
-            _buildAlertItem('تقارير متأخرة', 'هناك 5 مجموعات تجاوزت الموعد النهائي للمرحلة 4', Icons.warning_amber_rounded, Colors.red),
+            _buildAlertItem(
+                'مواعيد المناقشات',
+                'تبدأ مناقشات المرحلة النهائية بعد 10 أيام',
+                Icons.calendar_today,
+                Colors.blue),
+            _buildAlertItem(
+                'تقارير متأخرة',
+                'هناك 5 مجموعات تجاوزت الموعد النهائي للمرحلة 4',
+                Icons.warning_amber_rounded,
+                Colors.red),
           ],
         ),
       ),
@@ -92,7 +100,8 @@ class DeanDashboard extends StatelessWidget {
       children: [
         Text(
           value,
-          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+              color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
@@ -123,8 +132,11 @@ class DeanDashboard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-              Text(count, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              Text(name,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 15)),
+              Text(count,
+                  style: const TextStyle(color: Colors.grey, fontSize: 12)),
             ],
           ),
           const SizedBox(height: 12),
@@ -134,7 +146,9 @@ class DeanDashboard extends StatelessWidget {
               value: progress,
               backgroundColor: Colors.grey.shade100,
               valueColor: AlwaysStoppedAnimation<Color>(
-                progress > 0.7 ? Colors.green : (progress > 0.4 ? Colors.blue : Colors.orange),
+                progress > 0.7
+                    ? Colors.green
+                    : (progress > 0.4 ? Colors.blue : Colors.orange),
               ),
               minHeight: 8,
             ),
@@ -142,14 +156,16 @@ class DeanDashboard extends StatelessWidget {
           const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerLeft,
-            child: Text('${(progress * 100).toInt()}% مكتمل', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+            child: Text('${(progress * 100).toInt()}% مكتمل',
+                style: const TextStyle(fontSize: 11, color: Colors.grey)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAlertItem(String title, String subtitle, IconData icon, Color color) {
+  Widget _buildAlertItem(
+      String title, String subtitle, IconData icon, Color color) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -166,8 +182,12 @@ class DeanDashboard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
-                Text(subtitle, style: TextStyle(color: color.withOpacity(0.8), fontSize: 12)),
+                Text(title,
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, color: color)),
+                Text(subtitle,
+                    style:
+                        TextStyle(color: color.withOpacity(0.8), fontSize: 12)),
               ],
             ),
           ),

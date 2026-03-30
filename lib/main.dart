@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'screens/login_screen.dart';
+import 'screens/login_screen.dart'; // إضافة صفحة تسجيل الدخول
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +29,7 @@ class GraduationApp extends StatelessWidget {
       title: 'نظام إدارة مشاريع التخرج',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         fontFamily: 'Arial',
         useMaterial3: true,
       ),
@@ -39,7 +39,7 @@ class GraduationApp extends StatelessWidget {
           child: child!,
         );
       },
-      home: const LoginScreen(),
+      home: const LoginScreen(), // تغيير إلى صفحة تسجيل الدخول
     );
   }
 }

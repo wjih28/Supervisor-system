@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/models.dart';
-import '../services/supabase_service.dart';
-import 'student_dashboard.dart';
+import 'lib/models/models.dart';
+import 'supabase_service.dart';
+import 'lib/screens/student_dashboard.dart';
 import 'supervisor_dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
