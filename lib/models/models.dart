@@ -19,24 +19,24 @@ class Student {
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
-      id: json['stud_id'],
-      name: json['stud_name'],
-      email: json['stud_email'],
-      username: json['stud_username'],
-      programId: json['id_program'],
-      groupId: json['id_group'],
-      role: json['role'],
+      id: json["stud_id"],
+      name: json["stud_name"],
+      email: json["stud_email"],
+      username: json["stud_username"],
+      programId: json["id_program"],
+      groupId: json["id_group"],
+      role: json["role"],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'stud_name': name,
-      'stud_email': email,
-      'stud_username': username,
-      'id_program': programId,
-      'id_group': groupId,
-      'role': role,
+      "stud_name": name,
+      "stud_email": email,
+      "stud_username": username,
+      "id_program": programId,
+      "id_group": groupId,
+      "role": role,
     };
   }
 }
@@ -63,7 +63,7 @@ class Supervisor {
       id: json["sprvsr_id"],
       name: json["sprvsr_name"],
       email: json["sprvsr_email"],
-      password: json["sprvsr_pass"],
+      password: json["sprvsr_password"], // Corrected field name
       username: json["sprvsr_username"],
       isActive: json["sprvsr_isactive"],
     );
@@ -176,34 +176,34 @@ class ResearchFile {
 
   factory ResearchFile.fromJson(Map<String, dynamic> json) {
     return ResearchFile(
-      id: json['file_id'],
-      groupId: json['id_group'],
-      fileName: json['file_name'] ?? '',
-      fileUrl: json['file_url'],
-      fileType: json['file_type'],
-      fileSize: json['file_size'],
-      uploadedBy: json['uploaded_by'],
-      uploadedAt: json['uploaded_at'] != null
-          ? DateTime.parse(json['uploaded_at'])
+      id: json["file_id"],
+      groupId: json["id_group"],
+      fileName: json["file_name"] ?? "",
+      fileUrl: json["file_url"],
+      fileType: json["file_type"],
+      fileSize: json["file_size"],
+      uploadedBy: json["uploaded_by"],
+      uploadedAt: json["uploaded_at"] != null
+          ? DateTime.parse(json["uploaded_at"])
           : null,
-      supervisorNotes: json['supervisor_notes'],
-      description: json['file_description'] ?? json['description'],
-      stage: json['stage'] ?? json['file_stage'],
+      supervisorNotes: json["supervisor_notes"],
+      description: json["file_description"] ?? json["description"],
+      stage: json["stage"] ?? json["file_stage"],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id_group': groupId,
-      'file_name': fileName,
-      'file_url': fileUrl,
-      'file_type': fileType,
-      'file_size': fileSize,
-      'uploaded_by': uploadedBy,
-      'uploaded_at': uploadedAt?.toIso8601String(),
-      'supervisor_notes': supervisorNotes,
-      'file_description': description,
-      'file_stage': stage,
+      "id_group": groupId,
+      "file_name": fileName,
+      "file_url": fileUrl,
+      "file_type": fileType,
+      "file_size": fileSize,
+      "uploaded_by": uploadedBy,
+      "uploaded_at": uploadedAt?.toIso8601String(),
+      "supervisor_notes": supervisorNotes,
+      "file_description": description,
+      "file_stage": stage,
     };
   }
 }
@@ -225,19 +225,19 @@ class ProjectFile extends ResearchFile {
 
   factory ProjectFile.fromJson(Map<String, dynamic> json) {
     return ProjectFile(
-      id: json['file_id'],
-      groupId: json['id_group'],
-      fileName: json['file_name'] ?? '',
-      fileUrl: json['file_url'],
-      fileType: json['file_type'],
-      fileSize: json['file_size'],
-      uploadedBy: json['uploaded_by'],
-      uploadedAt: json['uploaded_at'] != null
-          ? DateTime.parse(json['uploaded_at'])
+      id: json["file_id"],
+      groupId: json["id_group"],
+      fileName: json["file_name"] ?? "",
+      fileUrl: json["file_url"],
+      fileType: json["file_type"],
+      fileSize: json["file_size"],
+      uploadedBy: json["uploaded_by"],
+      uploadedAt: json["uploaded_at"] != null
+          ? DateTime.parse(json["uploaded_at"])
           : null,
-      supervisorNotes: json['supervisor_notes'],
-      description: json['file_description'] ?? json['description'],
-      stage: json['stage'] ?? json['file_stage'],
+      supervisorNotes: json["supervisor_notes"],
+      description: json["file_description"] ?? json["description"],
+      stage: json["stage"] ?? json["file_stage"],
     );
   }
 }
@@ -394,8 +394,8 @@ class ProjectFeedback {
       id: json["comment_id"],
       projectId: json["id_group"],
       supervisorId: json["id_sprvsr"],
-      comment: json["comment_text"] ?? '',
-      notes: json["comment_text"] ?? '',
+      comment: json["comment_text"] ?? "",
+      notes: json["comment_text"] ?? "",
       stage: json["comment_stage"] ?? json["stage"],
       isResolved: json["is_resolved"] ?? false,
       supervisorName: json["supervisor_name"],
@@ -419,9 +419,9 @@ class Program {
 
   factory Program.fromJson(Map<String, dynamic> json) {
     return Program(
-      id: json['program_id'],
-      name: json['program_name'] ?? json['name'] ?? '',
-      departmentId: json['department_id'] ?? json['dep_id'],
+      id: json["program_id"],
+      name: json["program_name"] ?? json["name"] ?? "",
+      departmentId: json["department_id"] ?? json["dep_id"],
     );
   }
 }
@@ -437,8 +437,8 @@ class Department {
 
   factory Department.fromJson(Map<String, dynamic> json) {
     return Department(
-      id: json['dep_id'] ?? json['department_id'],
-      name: json['dep_name'] ?? json['name'] ?? '',
+      id: json["dep_id"] ?? json["department_id"],
+      name: json["dep_name"] ?? json["name"] ?? "",
     );
   }
 }
@@ -454,8 +454,8 @@ class HeadOfDepartment {
 
   factory HeadOfDepartment.fromJson(Map<String, dynamic> json) {
     return HeadOfDepartment(
-      id: json['hod_id'] ?? json['id'],
-      name: json['hod_name'] ?? json['name'] ?? '',
+      id: json["hod_id"] ?? json["id"],
+      name: json["hod_name"] ?? json["name"] ?? "",
     );
   }
 }
@@ -471,8 +471,8 @@ class ProgramCoordinator {
 
   factory ProgramCoordinator.fromJson(Map<String, dynamic> json) {
     return ProgramCoordinator(
-      id: json['coord_id'] ?? json['id'],
-      name: json['coord_name'] ?? json['name'] ?? '',
+      id: json["coord_id"] ?? json["id"],
+      name: json["coord_name"] ?? json["name"] ?? "",
     );
   }
 }
@@ -488,8 +488,8 @@ class Dean {
 
   factory Dean.fromJson(Map<String, dynamic> json) {
     return Dean(
-      id: json['dean_id'] ?? json['id'],
-      name: json['dean_name'] ?? json['name'] ?? '',
+      id: json["dean_id"] ?? json["id"],
+      name: json["dean_name"] ?? json["name"] ?? "",
     );
   }
 }
