@@ -22,7 +22,7 @@ class ProjectFiles extends StatefulWidget {
 class _ProjectFilesState extends State<ProjectFiles>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  Map<String, List<ProjectFile>> _files = {};
+  final Map<String, List<ProjectFile>> _files = {};
   bool _isLoading = true;
   String? _noteText;
 

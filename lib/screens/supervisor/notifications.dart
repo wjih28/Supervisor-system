@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:graduation_research_management/models/models.dart'
     as app_models;
-import 'package:graduation_research_management/services/supabase_service.dart';
 
 class Notifications extends StatefulWidget {
   final int supervisorId;
@@ -45,7 +44,7 @@ class _NotificationsState extends State<Notifications> {
           title: 'ملاحظة جديدة',
           message:
               'قام الطالب أحمد برفع خطة البحث الخاصة بمشروعه "تأثير التسويق الرقمي"',
-          recipientId: widget.supervisorId,
+          supervisorId: widget.supervisorId,
           isRead: false,
           createdAt: DateTime.now().subtract(const Duration(hours: 2)),
         ),
@@ -54,7 +53,7 @@ class _NotificationsState extends State<Notifications> {
           title: 'موعد تسليم',
           message:
               'باقي 3 أيام على الموعد النهائي لتسليم البحث النهائي لمشروع إدارة الموارد البشرية',
-          recipientId: widget.supervisorId,
+          supervisorId: widget.supervisorId,
           isRead: false,
           createdAt: DateTime.now().subtract(const Duration(days: 1)),
         ),
@@ -63,7 +62,7 @@ class _NotificationsState extends State<Notifications> {
           title: 'طلب مراجعة',
           message:
               'الطالبة سارة علي تطلب مراجعة الدراسة الميدانية لمشروع الذكاء الاصطناعي',
-          recipientId: widget.supervisorId,
+          supervisorId: widget.supervisorId,
           isRead: true,
           createdAt: DateTime.now().subtract(const Duration(days: 2)),
         ),
@@ -72,7 +71,7 @@ class _NotificationsState extends State<Notifications> {
           title: 'تحديث حالة',
           message:
               'تم تغيير حالة مشروع "إدارة الموارد البشرية" إلى "قيد التنفيذ"',
-          recipientId: widget.supervisorId,
+          supervisorId: widget.supervisorId,
           isRead: true,
           createdAt: DateTime.now().subtract(const Duration(days: 3)),
         ),
@@ -80,7 +79,7 @@ class _NotificationsState extends State<Notifications> {
           id: 5,
           title: 'تذكير',
           message: 'غداً اجتماع مناقشة خطة البحث مع الطلاب',
-          recipientId: widget.supervisorId,
+          supervisorId: widget.supervisorId,
           isRead: false,
           createdAt: DateTime.now().subtract(const Duration(hours: 5)),
         ),
@@ -110,7 +109,7 @@ class _NotificationsState extends State<Notifications> {
             id: _notifications[index].id,
             title: _notifications[index].title,
             message: _notifications[index].message,
-            recipientId: _notifications[index].recipientId,
+            supervisorId: _notifications[index].supervisorId,
             isRead: true,
             createdAt: _notifications[index].createdAt,
           );
@@ -132,7 +131,7 @@ class _NotificationsState extends State<Notifications> {
                   id: n.id,
                   title: n.title,
                   message: n.message,
-                  recipientId: n.recipientId,
+                  supervisorId: n.supervisorId,
                   isRead: true,
                   createdAt: n.createdAt,
                 ))
@@ -223,9 +222,9 @@ class _NotificationsState extends State<Notifications> {
             TextButton.icon(
               onPressed: _markAllAsRead,
               icon: const Icon(Icons.done_all, color: Colors.white, size: 18),
-              label: Text(
+              label: const Text(
                 'تعليم الكل كمقروء',
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white),
               ),
             ),
         ],
@@ -245,8 +244,8 @@ class _NotificationsState extends State<Notifications> {
                         child: Text(
                           'لديك $_unreadCount إشعار غير مقروء',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: const Color(0xFF2D62ED),
+                          style: const TextStyle(
+                            color: Color(0xFF2D62ED),
                             fontWeight: FontWeight.bold,
                           ),
                         ),

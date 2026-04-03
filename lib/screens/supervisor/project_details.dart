@@ -35,7 +35,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
 
     _project = await SupabaseService.getProjectById(widget.projectId);
     if (_project != null) {
-      _students = await SupabaseService.getGroupStudents(_project!.id!);
+      _students = await SupabaseService.getGroupStudents(_project!.id ?? 0);
       _feedbacks = await SupabaseService.getProjectFeedback(widget.projectId);
     }
 
@@ -43,18 +43,14 @@ class _ProjectDetailsState extends State<ProjectDetails> {
   }
 
   Future<void> _updateStatus(String newStatus) async {
-    final success =
-<<<<<<< Updated upstream
-        await SupabaseService.updateGroupStatus(widget.projectId, newStatus, _project?.progress ?? 0.0); // Changed to updateGroupStatus
+    final success = await SupabaseService.updateGroupStatus(
+      widget.projectId,
+      newStatus,
+      _project?.progress ?? 0.0,
+    );
     if (success && mounted) {
       setState(() {
-        _project = _project?.copyWith(status: newStatus); // Use copyWith
-=======
-        await SupabaseService.updateProjectStatus(widget.projectId, newStatus);
-    if (success && mounted) {
-      setState(() {
-        _project?.status = newStatus;
->>>>>>> Stashed changes
+        _project = _project?.copyWith(status: newStatus);
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديث حالة المشروع بنجاح')),
@@ -63,20 +59,11 @@ class _ProjectDetailsState extends State<ProjectDetails> {
   }
 
   Future<void> _updateStage(String newStage) async {
-<<<<<<< Updated upstream
-    // Assuming SupabaseService.updateProjectStage exists and updates currentStage
-    final success =
-        await SupabaseService.updateProjectStage(widget.projectId, newStage); // Assuming this method exists
-    if (success && mounted) {
-      setState(() {
-        _project = _project?.copyWith(currentStage: newStage); // Use copyWith
-=======
     final success =
         await SupabaseService.updateProjectStage(widget.projectId, newStage);
     if (success && mounted) {
       setState(() {
-        _project?.currentStage = newStage;
->>>>>>> Stashed changes
+        _project = _project?.copyWith(currentStage: newStage);
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديث مرحلة المشروع بنجاح')),
@@ -103,13 +90,9 @@ class _ProjectDetailsState extends State<ProjectDetails> {
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
-                value: 'edit_status',
-                child: Text('تغيير حالة المشروع'),
-              ),
+                  value: 'edit_status', child: Text('تغيير حالة المشروع')),
               const PopupMenuItem(
-                value: 'edit_stage',
-                child: Text('تغيير المرحلة الحالية'),
-              ),
+                  value: 'edit_stage', child: Text('تغيير المرحلة الحالية')),
             ],
           ),
         ],
@@ -121,48 +104,31 @@ class _ProjectDetailsState extends State<ProjectDetails> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // عنوان المشروع
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Text(
-                            'عنوان البحث',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
+                          const Text('عنوان البحث',
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.grey)),
                           const SizedBox(height: 8),
-                          Text(
-                            _project?.name ?? 'بدون عنوان',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          Text(_project?.name ?? 'بدون عنوان',
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 16),
-                          const Text(
-                            'الوصف',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
+                          const Text('الوصف',
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.grey)),
                           const SizedBox(height: 8),
-                          Text(
-                            _project?.description ?? 'لا يوجد وصف',
-                            style: const TextStyle(fontSize: 16),
-                          ),
+                          Text(_project?.description ?? 'لا يوجد وصف',
+                              style: const TextStyle(fontSize: 16)),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // حالة المشروع والمرحلة
                   Row(
                     children: [
                       Expanded(
@@ -185,32 +151,24 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                     ],
                   ),
                   const SizedBox(height: 16),
-
-                  // نسبة الإنجاز
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Text(
-                            'نسبة الإنجاز',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                            ),
-                          ),
+                          const Text('نسبة الإنجاز',
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.grey)),
                           const SizedBox(height: 12),
                           Row(
                             children: [
                               Text(
-                                '${((_project?.progress ?? 0) * 100).toInt()}%',
-                                style: const TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2D62ED),
-                                ),
-                              ),
+                                  '${((_project?.progress ?? 0) * 100).toInt()}%',
+                                  style: const TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF2D62ED))),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: ClipRRect(
@@ -220,8 +178,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                                     backgroundColor: Colors.grey.shade200,
                                     valueColor:
                                         const AlwaysStoppedAnimation<Color>(
-                                      Color(0xFF2D62ED),
-                                    ),
+                                            Color(0xFF2D62ED)),
                                     minHeight: 10,
                                   ),
                                 ),
@@ -233,90 +190,62 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // أعضاء الفريق
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Text(
-                            'أعضاء الفريق',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          const Text('أعضاء الفريق',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 16),
-                          ..._students.map((student) => ListTile(
-                                leading: const Icon(Icons.person,
-                                    color: Color(0xFF2D62ED)),
-                                title: Text(student.name),
-                                subtitle: Text(student.email ?? ''),
-                                trailing: Chip(
-                                  label: Text(
-                                    student.role == 'leader'
-                                        ? 'قائد الفريق'
-                                        : 'عضو',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  backgroundColor: student.role == 'leader'
-                                      ? Colors.green.withOpacity(0.2)
-                                      : Colors.orange.withOpacity(0.2),
-                                ),
-                              )),
                           if (_students.isEmpty)
                             const Center(
-                              child: Padding(
                                 padding: EdgeInsets.all(16),
-                                child: Text('لا يوجد أعضاء مسجلين'),
-                              ),
-                            ),
+                                child: Text('لا يوجد أعضاء مسجلين'))
+                          else
+                            ..._students.map((student) => ListTile(
+                                  leading: const Icon(Icons.person,
+                                      color: Color(0xFF2D62ED)),
+                                  title: Text(student.name),
+                                  subtitle: Text(student.email ?? ''),
+                                  trailing: Chip(
+                                    label: Text(
+                                        student.role == 'leader'
+                                            ? 'قائد الفريق'
+                                            : 'عضو',
+                                        style: const TextStyle(fontSize: 12)),
+                                    backgroundColor: student.role == 'leader'
+                                        ? Colors.green.withOpacity(0.2)
+                                        : Colors.orange.withOpacity(0.2),
+                                  ),
+                                )),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // أزرار الإجراءات
                   Row(
                     children: [
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProjectFiles(
-                                  projectId: widget.projectId,
-                                  supervisorId: widget.supervisorId,
-<<<<<<< Updated upstream
-                                ),
-                              ),
-                            );
-=======
-                                  projectTitle: _project?.name ?? '',
-                                ),
-                              ),
-                            ).then((_) => _loadData());
->>>>>>> Stashed changes
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProjectFiles(
+                                        projectId: widget.projectId,
+                                        supervisorId: widget.supervisorId,
+                                        projectTitle: _project?.name ??
+                                            ''))).then((_) => _loadData());
                           },
                           icon: const Icon(Icons.folder_open),
                           label: const Text('الملفات'),
                           style: ElevatedButton.styleFrom(
-<<<<<<< Updated upstream
-                            foregroundColor: Colors.white,
-                            backgroundColor: const Color(0xFF2D62ED),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-=======
-                            backgroundColor: Colors.blue,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
->>>>>>> Stashed changes
-                          ),
+                              backgroundColor: Colors.blue,
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14)),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -324,215 +253,98 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                         child: ElevatedButton.icon(
                           onPressed: () {
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddFeedback(
-                                  projectId: widget.projectId,
-                                  supervisorId: widget.supervisorId,
-<<<<<<< Updated upstream
-                                ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.comment),
-                          label: const Text('الملاحظات'),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.orange,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-=======
-                                  projectTitle: _project?.name ?? '',
-                                ),
-                              ),
-                            ).then((_) => _loadData());
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddFeedback(
+                                        projectId: widget.projectId,
+                                        supervisorId: widget.supervisorId,
+                                        projectTitle: _project?.name ??
+                                            ''))).then((_) => _loadData());
                           },
                           icon: const Icon(Icons.add_comment),
                           label: const Text('إضافة ملاحظة'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
->>>>>>> Stashed changes
-                          ),
+                              backgroundColor: Colors.green,
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 14)),
                         ),
                       ),
                     ],
                   ),
-<<<<<<< Updated upstream
-                  const SizedBox(height: 16),
-
-                  // قسم الملاحظات
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Text(
-                            'الملاحظات والتقييمات',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          if (_feedbacks.isEmpty)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Text('لا توجد ملاحظات حتى الآن'),
-                              ),
-                            )
-                          else
-                            ..._feedbacks.map((feedback) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: Card(
-                                    color: Colors.grey[100],
-                                    margin: EdgeInsets.zero,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            feedback.comment,
-                                            textAlign: TextAlign.right,
-                                            style: const TextStyle(fontSize: 14),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            'بواسطة: ${feedback.supervisorName ?? 'مشرف غير معروف'}',
-                                            style: const TextStyle(
-                                                fontSize: 12, color: Colors.grey),
-                                          ),
-                                          Text(
-                                            'تاريخ: ${feedback.createdAt != null ? '${feedback.createdAt!.day}/${feedback.createdAt!.month}/${feedback.createdAt!.year}' : 'غير معروف'}',
-                                            style: const TextStyle(
-                                                fontSize: 12, color: Colors.grey),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                )),
-                        ],
-                      ),
-                    ),
-                  ),
-=======
                   const SizedBox(height: 24),
-
-                  // الملاحظات السابقة
-                  const Text(
-                    'الملاحظات السابقة',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  const Text('الملاحظات السابقة',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
-                  ..._feedbacks.map((feedback) => Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  if (!feedback.isResolved)
-                                    const Chip(
-                                      label: Text('قيد الانتظار'),
-                                      backgroundColor: Colors.orange,
-                                      labelStyle: TextStyle(
-                                          color: Colors.white, fontSize: 10),
-                                    ),
-                                  Text(
-                                    _getStageText(feedback.stage),
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                feedback.notes,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _formatDate(feedback.createdAt),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade500,
-                                ),
-                              ),
-                              if (!feedback.isResolved)
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      await SupabaseService.resolveFeedback(
-                                          feedback.id!);
-                                      _loadData();
-                                    },
-                                    child: const Text('تم الحل'),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      )),
                   if (_feedbacks.isEmpty)
                     const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32),
-                        child: Text('لا توجد ملاحظات حالياً'),
-                      ),
-                    ),
->>>>>>> Stashed changes
+                        child: Padding(
+                            padding: EdgeInsets.all(32),
+                            child: Text('لا توجد ملاحظات حالياً')))
+                  else
+                    ..._feedbacks.map((feedback) => Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    if (feedback.isResolved != true)
+                                      const Chip(
+                                          label: Text('قيد الانتظار'),
+                                          backgroundColor: Colors.orange,
+                                          labelStyle: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10)),
+                                    Text(_getStageText(feedback.stage),
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.grey)),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Text(feedback.notes ?? feedback.comment,
+                                    style: const TextStyle(fontSize: 16)),
+                                const SizedBox(height: 8),
+                                Text(_formatDate(feedback.createdAt),
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade500)),
+                                const SizedBox(height: 8),
+                                Text(
+                                    'بواسطة: ${feedback.supervisorName ?? 'مشرف غير معروف'}',
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.grey)),
+                                if (feedback.isResolved != true)
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        await SupabaseService.resolveFeedback(
+                                            feedback.id ?? 0);
+                                        _loadData();
+                                      },
+                                      child: const Text('تم الحل'),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        )),
                 ],
               ),
             ),
     );
   }
 
-  Widget _buildInfoCard({
-    required String title,
-    required String value,
-    required Color color,
-    required IconData icon,
-  }) {
-<<<<<<< Updated upstream
-    return Card(
-      color: color.withOpacity(0.1),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: TextStyle(fontSize: 14, color: color),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-=======
+  Widget _buildInfoCard(
+      {required String title,
+      required String value,
+      required Color color,
+      required IconData icon}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -545,22 +357,12 @@ class _ProjectDetailsState extends State<ProjectDetails> {
         children: [
           Icon(icon, color: color, size: 24),
           const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.bold, color: color)),
           const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey.shade600,
-            ),
-          ),
+          Text(title,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
         ],
       ),
     );
@@ -578,37 +380,8 @@ class _ProjectDetailsState extends State<ProjectDetails> {
             _buildStatusOption('approved', 'معتمد'),
             _buildStatusOption('in_progress', 'قيد التنفيذ'),
             _buildStatusOption('completed', 'مكتمل'),
->>>>>>> Stashed changes
           ],
         ),
-      ),
-    );
-  }
-
-<<<<<<< Updated upstream
-  String _getStatusText(String? status) {
-    switch (status) {
-      case 'pending':
-        return 'قيد الانتظار';
-      case 'in_progress':
-        return 'قيد التنفيذ';
-      case 'completed':
-        return 'مكتملة';
-      case 'delayed':
-        return 'متأخرة';
-      default:
-        return 'غير معروف';
-=======
-  Widget _buildStatusOption(String status, String label) {
-    return ListTile(
-      title: Text(label),
-      trailing: Radio<String>(
-        value: status,
-        groupValue: _project?.status,
-        onChanged: (value) {
-          if (value != null) _updateStatus(value);
-          Navigator.pop(context);
-        },
       ),
     );
   }
@@ -621,28 +394,29 @@ class _ProjectDetailsState extends State<ProjectDetails> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildStageOption('proposal', 'المقترح'),
-            _buildStageOption('plan', 'الخطة'),
-            _buildStageOption('field', 'الدراسة الميدانية'),
-            _buildStageOption('writing', 'الكتابة'),
-            _buildStageOption('final', 'النهائي'),
+            _buildStatusOption('proposal', 'المقترح'),
+            _buildStatusOption('plan', 'خطة البحث'),
+            _buildStatusOption('field', 'الدراسة الميدانية'),
+            _buildStatusOption('writing', 'الكتابة'),
+            _buildStatusOption('final', 'البحث النهائي'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStageOption(String stage, String label) {
+  Widget _buildStatusOption(String key, String label) {
     return ListTile(
       title: Text(label),
-      trailing: Radio<String>(
-        value: stage,
-        groupValue: _project?.currentStage,
-        onChanged: (value) {
-          if (value != null) _updateStage(value);
-          Navigator.pop(context);
-        },
-      ),
+      onTap: () async {
+        Navigator.pop(context);
+        if (['pending_approval', 'approved', 'in_progress', 'completed']
+            .contains(key)) {
+          await _updateStatus(key);
+        } else {
+          await _updateStage(key);
+        }
+      },
     );
   }
 
@@ -658,22 +432,11 @@ class _ProjectDetailsState extends State<ProjectDetails> {
         return 'مكتمل';
       default:
         return status ?? 'غير محدد';
->>>>>>> Stashed changes
     }
   }
 
   Color _getStatusColor(String? status) {
     switch (status) {
-<<<<<<< Updated upstream
-      case 'pending':
-        return Colors.grey;
-      case 'in_progress':
-        return Colors.blue;
-      case 'completed':
-        return Colors.green;
-      case 'delayed':
-        return Colors.red;
-=======
       case 'in_progress':
         return Colors.orange;
       case 'pending_approval':
@@ -682,180 +445,23 @@ class _ProjectDetailsState extends State<ProjectDetails> {
         return Colors.blue;
       case 'completed':
         return Colors.green;
->>>>>>> Stashed changes
       default:
         return Colors.grey;
     }
   }
 
   String _getStageText(String? stage) {
-<<<<<<< Updated upstream
-    return stage ?? 'غير محدد';
-  }
-
-  void _showStatusDialog() {
-    String? selectedStatus = _project?.status;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('تغيير حالة المشروع'),
-          content: DropdownButtonFormField<String>(
-            value: selectedStatus,
-            items: const [
-              DropdownMenuItem(value: 'pending', child: Text('قيد الانتظار')),
-              DropdownMenuItem(value: 'in_progress', child: Text('قيد التنفيذ')),
-              DropdownMenuItem(value: 'completed', child: Text('مكتملة')),
-              DropdownMenuItem(value: 'delayed', child: Text('متأخرة')),
-            ],
-            onChanged: (value) {
-              selectedStatus = value;
-            },
-            decoration: const InputDecoration(
-              labelText: 'الحالة',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('إلغاء'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (selectedStatus != null) {
-                  _updateStatus(selectedStatus!);
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('تحديث'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showStageDialog() {
-    String? selectedStage = _project?.currentStage;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('تغيير المرحلة الحالية'),
-          content: DropdownButtonFormField<String>(
-            value: selectedStage,
-            items: const [
-              DropdownMenuItem(value: 'proposal', child: Text('اقتراح')),
-              DropdownMenuItem(value: 'design', child: Text('تصميم')),
-              DropdownMenuItem(value: 'implementation', child: Text('تنفيذ')),
-              DropdownMenuItem(value: 'testing', child: Text('اختبار')),
-              DropdownMenuItem(value: 'deployment', child: Text('نشر')),
-            ],
-            onChanged: (value) {
-              selectedStage = value;
-            },
-            decoration: const InputDecoration(
-              labelText: 'المرحلة',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('إلغاء'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (selectedStage != null) {
-                  _updateStage(selectedStage!);
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Text('تحديث'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-// Extension to allow copying ResearchGroup with new values
-extension ResearchGroupCopyWith on ResearchGroup {
-  ResearchGroup copyWith({
-    int? id,
-    String? name,
-    int? supervisorId,
-    int? stateId,
-    int? leaderId,
-    String? description,
-    double? progress,
-    String? status,
-    String? currentStage,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return ResearchGroup(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      supervisorId: supervisorId ?? this.supervisorId,
-      stateId: stateId ?? this.stateId,
-      leaderId: leaderId ?? this.leaderId,
-      description: description ?? this.description,
-      progress: progress ?? this.progress,
-      status: status ?? this.status,
-      currentStage: currentStage ?? this.currentStage,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-}
-
-// Placeholder for ProjectFeedback model if it doesn't exist yet
-// You should define this model in models.dart based on your Supabase schema
-class ProjectFeedback {
-  final int? id;
-  final int? projectId;
-  final int? supervisorId;
-  final String comment;
-  final String? supervisorName; // Assuming you want to display supervisor name
-  final DateTime? createdAt;
-
-  ProjectFeedback({
-    this.id,
-    this.projectId,
-    this.supervisorId,
-    required this.comment,
-    this.supervisorName,
-    this.createdAt,
-  });
-
-  factory ProjectFeedback.fromJson(Map<String, dynamic> json) {
-    return ProjectFeedback(
-      id: json['comment_id'], // Assuming it maps to comment_id in review_comments
-      projectId: json['id_group'], // Assuming it maps to id_group in review_comments
-      supervisorId: json['id_sprvsr'], // Assuming it maps to id_sprvsr in review_comments
-      comment: json['comment_text'],
-      supervisorName: json['supervisor_name'], // Adjust according to your Supabase join/view
-      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
-    );
-=======
     switch (stage) {
       case 'proposal':
         return 'المقترح';
       case 'plan':
-        return 'الخطة';
+        return 'خطة البحث';
       case 'field':
         return 'الدراسة الميدانية';
       case 'writing':
         return 'الكتابة';
       case 'final':
-        return 'النهائي';
+        return 'البحث النهائي';
       default:
         return stage ?? 'غير محدد';
     }
@@ -863,7 +469,6 @@ class ProjectFeedback {
 
   String _formatDate(DateTime? date) {
     if (date == null) return '';
-    return '${date.year}/${date.month}/${date.day} ${date.hour}:${date.minute}';
->>>>>>> Stashed changes
+    return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
 }

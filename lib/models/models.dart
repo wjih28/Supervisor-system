@@ -107,9 +107,14 @@ class ResearchGroup {
       description: json["group_description"],
       progress: (json["group_progress"] as num?)?.toDouble(),
       status: json["group_status"],
-      currentStage: json["current_stage"], // Assuming current_stage might come from JSON
-      createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : null,
-      updatedAt: json["updated_at"] != null ? DateTime.parse(json["updated_at"]) : null,
+      currentStage:
+          json["current_stage"], // Assuming current_stage might come from JSON
+      createdAt: json["created_at"] != null
+          ? DateTime.parse(json["created_at"])
+          : null,
+      updatedAt: json["updated_at"] != null
+          ? DateTime.parse(json["updated_at"])
+          : null,
     );
   }
 
@@ -140,6 +145,7 @@ class ResearchGroup {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+}
 
 class ResearchFile {
   final int? id;
@@ -232,7 +238,6 @@ class ProjectFile extends ResearchFile {
       supervisorNotes: json['supervisor_notes'],
       description: json['file_description'] ?? json['description'],
       stage: json['stage'] ?? json['file_stage'],
->>>>>>> Stashed changes
     );
   }
 }
@@ -246,11 +251,7 @@ class ReviewComment {
   final int? rating;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-<<<<<<< Updated upstream
   final bool? isResolved;
-=======
-  final bool isResolved;
->>>>>>> Stashed changes
 
   ReviewComment({
     this.id,
@@ -261,7 +262,6 @@ class ReviewComment {
     this.rating,
     this.createdAt,
     this.updatedAt,
-<<<<<<< Updated upstream
     this.isResolved,
   });
 
@@ -273,8 +273,12 @@ class ReviewComment {
       comment: json["comment_text"],
       commentType: json["comment_type"],
       rating: json["comment_rating"],
-      createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : null,
-      updatedAt: json["updated_at"] != null ? DateTime.parse(json["updated_at"]) : null,
+      createdAt: json["created_at"] != null
+          ? DateTime.parse(json["created_at"])
+          : null,
+      updatedAt: json["updated_at"] != null
+          ? DateTime.parse(json["updated_at"])
+          : null,
       isResolved: json["is_resolved"],
     );
   }
@@ -312,9 +316,13 @@ class ProjectStage {
       stageName: json["stage_name"],
       description: json["stage_description"],
       isCompleted: json["is_completed"],
-      startDate: json["start_date"] != null ? DateTime.parse(json["start_date"]) : null,
-      endDate: json["end_date"] != null ? DateTime.parse(json["end_date"]) : null,
-      dueDate: json["due_date"] != null ? DateTime.parse(json["due_date"]) : null,
+      startDate: json["start_date"] != null
+          ? DateTime.parse(json["start_date"])
+          : null,
+      endDate:
+          json["end_date"] != null ? DateTime.parse(json["end_date"]) : null,
+      dueDate:
+          json["due_date"] != null ? DateTime.parse(json["due_date"]) : null,
       completionPercentage: (json["completion_percentage"] as num?)?.toDouble(),
       status: json["stage_status"],
     );
@@ -351,181 +359,50 @@ class Notification {
       notificationType: json["notification_type"],
       relatedGroupId: json["id_group"],
       isRead: json["is_read"],
-      createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : null,
+      createdAt: json["created_at"] != null
+          ? DateTime.parse(json["created_at"])
+          : null,
     );
   }
 }
 
-// Placeholder for ProjectFeedback model if it doesn\"t exist yet
-// You should define this model in models.dart based on your Supabase schema
-=======
-    this.isResolved = false,
-  });
-
-  String get content => comment;
-
-  factory ReviewComment.fromJson(Map<String, dynamic> json) {
-    return ReviewComment(
-      id: json['comment_id'],
-      groupId: json['id_group'],
-      supervisorId: json['id_sprvsr'] ?? json['supervisor_id'],
-      comment: json['comment_text'] ?? json['content'] ?? '',
-      commentType: json['comment_type'],
-      rating: json['comment_rating'],
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null,
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
-      isResolved: json['is_resolved'] ?? false,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'comment_text': comment,
-      'content': comment,
-      'id_group': groupId,
-      'id_sprvsr': supervisorId,
-      'comment_type': commentType,
-      'comment_rating': rating,
-      'is_resolved': isResolved,
-      'created_at': createdAt?.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
-    };
-  }
-}
-
->>>>>>> Stashed changes
 class ProjectFeedback {
   final int? id;
   final int? projectId;
   final int? supervisorId;
-<<<<<<< Updated upstream
   final String comment;
-  final String? supervisorName; // Assuming you want to display supervisor name
-=======
-  final String stage;
-  final String notes;
-  final bool isResolved;
->>>>>>> Stashed changes
+  final String? notes;
+  final String? stage;
+  final bool? isResolved;
+  final String? supervisorName;
   final DateTime? createdAt;
 
   ProjectFeedback({
     this.id,
     this.projectId,
     this.supervisorId,
-<<<<<<< Updated upstream
     required this.comment,
+    this.notes,
+    this.stage,
+    this.isResolved,
     this.supervisorName,
-=======
-    required this.stage,
-    required this.notes,
-    this.isResolved = false,
->>>>>>> Stashed changes
     this.createdAt,
   });
 
   factory ProjectFeedback.fromJson(Map<String, dynamic> json) {
     return ProjectFeedback(
-<<<<<<< Updated upstream
-      id: json["comment_id"], // Assuming it maps to comment_id in review_comments
-      projectId: json["id_group"], // Assuming it maps to id_group in review_comments
-      supervisorId: json["id_sprvsr"], // Assuming it maps to id_sprvsr in review_comments
-      comment: json["comment_text"],
-      supervisorName: json["supervisor_name"], // Adjust according to your Supabase join/view
-      createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : null,
-=======
-      id: json['feedback_id'],
-      projectId: json['project_id'],
-      supervisorId: json['supervisor_id'] ?? json['id_sprvsr'],
-      stage: json['stage'] ?? '',
-      notes: json['notes'] ?? json['comment_text'] ?? '',
-      isResolved: json['is_resolved'] ?? false,
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
+      id: json["comment_id"],
+      projectId: json["id_group"],
+      supervisorId: json["id_sprvsr"],
+      comment: json["comment_text"] ?? '',
+      notes: json["comment_text"] ?? '',
+      stage: json["comment_stage"] ?? json["stage"],
+      isResolved: json["is_resolved"] ?? false,
+      supervisorName: json["supervisor_name"],
+      createdAt: json["created_at"] != null
+          ? DateTime.parse(json["created_at"])
           : null,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'feedback_id': id,
-      'project_id': projectId,
-      'supervisor_id': supervisorId,
-      'stage': stage,
-      'notes': notes,
-      'is_resolved': isResolved,
-      'created_at': createdAt?.toIso8601String(),
-    };
-  }
-}
-
-class ProjectStage {
-  final int? id;
-  final String name;
-  final String? description;
-  final int? groupId;
-  final bool? isCompleted;
-
-  ProjectStage({
-    this.id,
-    required this.name,
-    this.description,
-    this.groupId,
-    this.isCompleted,
-  });
-
-  factory ProjectStage.fromJson(Map<String, dynamic> json) {
-    return ProjectStage(
-      id: json['stage_id'],
-      name: json['stage_name'],
-      description: json['description'],
-      groupId: json['id_group'],
-      isCompleted: json['is_completed'],
-    );
-  }
-}
-
-class Notification {
-  final int? id;
-  final String title;
-  final String? message;
-  final int? recipientId;
-  final bool? isRead;
-  final DateTime? createdAt;
-
-  Notification({
-    this.id,
-    required this.title,
-    this.message,
-    this.recipientId,
-    this.isRead,
-    this.createdAt,
-  });
-
-  factory Notification.fromJson(Map<String, dynamic> json) {
-    return Notification(
-      id: json['notification_id'],
-      title: json['title'],
-      message: json['message'],
-      recipientId: json['id_recipient'],
-      isRead: json['is_read'],
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'message': message,
-      'id_recipient': recipientId,
-      'is_read': isRead,
-      'created_at': createdAt?.toIso8601String(),
-    };
   }
 }
 
@@ -613,7 +490,6 @@ class Dean {
     return Dean(
       id: json['dean_id'] ?? json['id'],
       name: json['dean_name'] ?? json['name'] ?? '',
->>>>>>> Stashed changes
     );
   }
 }

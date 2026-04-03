@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:graduation_research_management/services/supabase_service.dart';
 import 'package:graduation_research_management/models/models.dart';
 import 'package:graduation_research_management/screens/supervisor/project_details.dart';
-import 'package:graduation_research_management/screens/supervisor/notifications.dart';
 
 class SupervisorProjectsList extends StatefulWidget {
   final int supervisorId;

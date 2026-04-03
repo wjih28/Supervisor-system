@@ -16,7 +16,7 @@ class GradesEntry extends StatefulWidget {
 
 class _GradesEntryState extends State<GradesEntry> {
   List<ResearchGroup> _projects = [];
-  Map<int, Map<String, double>> _grades = {};
+  final Map<int, Map<String, double>> _grades = {};
   bool _isLoading = true;
 
   final List<Map<String, String>> _criteria = [

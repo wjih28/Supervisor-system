@@ -14,7 +14,8 @@ class StudentDashboard extends StatelessWidget {
         elevation: 0,
         title: const Text(
           'لوحة تحكم الطالب',
-          style: TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold),
+          style:
+              TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -35,7 +36,10 @@ class StudentDashboard extends StatelessWidget {
             const SizedBox(height: 30),
             const Text(
               'مراحل المشروع',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1E293B)),
             ),
             const SizedBox(height: 15),
             _buildStagesList(),
@@ -51,7 +55,10 @@ class StudentDashboard extends StatelessWidget {
       children: [
         Text(
           'مرحباً، ${student?.name ?? "الطالب"} 👋',
-          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+          style: const TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0F172A)),
         ),
         const SizedBox(height: 6),
         const Text(
@@ -69,36 +76,43 @@ class StudentDashboard extends StatelessWidget {
         color: const Color(0xFF2D62ED),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: const Color(0xFF2D62ED).withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10)),
+          BoxShadow(
+              color: const Color(0xFF2D62ED).withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10)),
         ],
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('حالة المشروع الحالية', style: TextStyle(color: Colors.white70, fontSize: 14)),
+              Text('حالة المشروع الحالية',
+                  style: TextStyle(color: Colors.white70, fontSize: 14)),
               Icon(Icons.auto_graph_rounded, color: Colors.white, size: 24),
             ],
           ),
-          const SizedBox(height: 15),
-          const Text(
+          SizedBox(height: 15),
+          Text(
             'قيد العمل على الفصل الثاني',
-            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: LinearProgressIndicator(
                   value: 0.4,
                   backgroundColor: Colors.white24,
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               ),
-              const SizedBox(width: 15),
-              const Text('40%', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              SizedBox(width: 15),
+              Text('40%',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ],
           ),
         ],
@@ -109,46 +123,59 @@ class StudentDashboard extends StatelessWidget {
   Widget _buildStagesList() {
     final stages = [
       {'title': 'الفصل الأول: المقدمة', 'status': 'مكتمل', 'isDone': true},
-      {'title': 'الفصل الثاني: الدراسات السابقة', 'status': 'قيد المراجعة', 'isDone': false},
+      {
+        'title': 'الفصل الثاني: الدراسات السابقة',
+        'status': 'قيد المراجعة',
+        'isDone': false
+      },
       {'title': 'الفصل الثالث: المنهجية', 'status': 'لم يبدأ', 'isDone': false},
     ];
 
     return Column(
-      children: stages.map((stage) => Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              stage['isDone'] as bool ? Icons.check_circle : Icons.radio_button_unchecked,
-              color: stage['isDone'] as bool ? Colors.green : Colors.grey,
-            ),
-            const SizedBox(width: 15),
-            Expanded(
-              child: Text(
-                stage['title'] as String,
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: stage['isDone'] as bool ? Colors.black87 : Colors.grey[600],
+      children: stages
+          .map((stage) => Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: const Color(0xFFF1F5F9)),
                 ),
-              ),
-            ),
-            Text(
-              stage['status'] as String,
-              style: TextStyle(
-                fontSize: 12,
-                color: stage['isDone'] as bool ? Colors.green : Colors.orange,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      )).toList(),
+                child: Row(
+                  children: [
+                    Icon(
+                      stage['isDone'] as bool
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                      color:
+                          stage['isDone'] as bool ? Colors.green : Colors.grey,
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Text(
+                        stage['title'] as String,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: stage['isDone'] as bool
+                              ? Colors.black87
+                              : Colors.grey[600],
+                        ),
+                      ),
+                    ),
+                    Text(
+                      stage['status'] as String,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: stage['isDone'] as bool
+                            ? Colors.green
+                            : Colors.orange,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+          .toList(),
     );
   }
 }
