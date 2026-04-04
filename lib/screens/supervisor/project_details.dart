@@ -202,8 +202,9 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                           const SizedBox(height: 16),
                           if (_students.isEmpty)
                             const Center(
-                                padding: EdgeInsets.all(16),
-                                child: Text('لا يوجد أعضاء مسجلين'))
+                                child: Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: Text('لا يوجد أعضاء مسجلين')))
                           else
                             ..._students.map((student) => ListTile(
                                   leading: const Icon(Icons.person,
@@ -264,7 +265,7 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                           icon: const Icon(Icons.add_comment),
                           label: const Text('إضافة ملاحظة'),
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: const Color(0xFF2D62ED),
                               padding:
                                   const EdgeInsets.symmetric(vertical: 14)),
                         ),
@@ -272,68 +273,17 @@ class _ProjectDetailsState extends State<ProjectDetails> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text('الملاحظات السابقة',
+                  const Text('الملاحظات والتعليقات',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   if (_feedbacks.isEmpty)
                     const Center(
                         child: Padding(
                             padding: EdgeInsets.all(32),
                             child: Text('لا توجد ملاحظات حالياً')))
                   else
-                    ..._feedbacks.map((feedback) => Card(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    if (feedback.isResolved != true)
-                                      const Chip(
-                                          label: Text('قيد الانتظار'),
-                                          backgroundColor: Colors.orange,
-                                          labelStyle: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10)),
-                                    Text(_getStageText(feedback.stage),
-                                        style: const TextStyle(
-                                            fontSize: 12, color: Colors.grey)),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Text(feedback.notes ?? feedback.comment,
-                                    style: const TextStyle(fontSize: 16)),
-                                const SizedBox(height: 8),
-                                Text(_formatDate(feedback.createdAt),
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade500)),
-                                const SizedBox(height: 8),
-                                Text(
-                                    'بواسطة: ${feedback.supervisorName ?? 'مشرف غير معروف'}',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.grey)),
-                                if (feedback.isResolved != true)
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: TextButton(
-                                      onPressed: () async {
-                                        await SupabaseService.resolveFeedback(
-                                            feedback.id ?? 0);
-                                        _loadData();
-                                      },
-                                      child: const Text('تم الحل'),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        )),
+                    ..._feedbacks.map((feedback) => _buildFeedbackCard(feedback)),
                 ],
               ),
             ),
@@ -348,22 +298,60 @@ class _ProjectDetailsState extends State<ProjectDetails> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: Colors.grey.shade200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Icon(icon, color: color, size: 24),
+          Icon(icon, color: color, size: 20),
           const SizedBox(height: 8),
-          Text(value,
-              style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold, color: color)),
+          Text(title, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
           const SizedBox(height: 4),
-          Text(title,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+          Text(value,
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFeedbackCard(ProjectFeedback feedback) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (feedback.isResolved == true)
+                  const Icon(Icons.check_circle, color: Colors.green, size: 20)
+                else
+                  TextButton(
+                    onPressed: () async {
+                      if (feedback.id != null) {
+                        await SupabaseService.resolveFeedback(feedback.id!);
+                        _loadData();
+                      }
+                    },
+                    child: const Text('تحديد كمحلول'),
+                  ),
+                Text(_getStageText(feedback.stage),
+                    style: const TextStyle(
+                        color: Color(0xFF2D62ED), fontWeight: FontWeight.bold)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(feedback.comment, style: const TextStyle(fontSize: 15)),
+            const SizedBox(height: 12),
+            Text(_formatDate(feedback.createdAt),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+          ],
+        ),
       ),
     );
   }
@@ -372,14 +360,31 @@ class _ProjectDetailsState extends State<ProjectDetails> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('تغيير حالة المشروع'),
+        title: const Text('تغيير حالة المشروع', textAlign: TextAlign.right),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildStatusOption('pending_approval', 'قيد المراجعة'),
-            _buildStatusOption('approved', 'معتمد'),
-            _buildStatusOption('in_progress', 'قيد التنفيذ'),
-            _buildStatusOption('completed', 'مكتمل'),
+            ListTile(
+              title: const Text('قيد العمل', textAlign: TextAlign.right),
+              onTap: () {
+                _updateStatus('in_progress');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('مكتمل', textAlign: TextAlign.right),
+              onTap: () {
+                _updateStatus('completed');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('متأخر', textAlign: TextAlign.right),
+              onTap: () {
+                _updateStatus('delayed');
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
       ),
@@ -390,48 +395,54 @@ class _ProjectDetailsState extends State<ProjectDetails> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('تغيير المرحلة الحالية'),
+        title: const Text('تغيير المرحلة الحالية', textAlign: TextAlign.right),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildStatusOption('proposal', 'المقترح'),
-            _buildStatusOption('plan', 'خطة البحث'),
-            _buildStatusOption('field', 'الدراسة الميدانية'),
-            _buildStatusOption('writing', 'الكتابة'),
-            _buildStatusOption('final', 'البحث النهائي'),
+            ListTile(
+              title: const Text('المقترح', textAlign: TextAlign.right),
+              onTap: () {
+                _updateStage('proposal');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('خطة البحث', textAlign: TextAlign.right),
+              onTap: () {
+                _updateStage('plan');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('الدراسة الميدانية', textAlign: TextAlign.right),
+              onTap: () {
+                _updateStage('field');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('البحث النهائي', textAlign: TextAlign.right),
+              onTap: () {
+                _updateStage('final');
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatusOption(String key, String label) {
-    return ListTile(
-      title: Text(label),
-      onTap: () async {
-        Navigator.pop(context);
-        if (['pending_approval', 'approved', 'in_progress', 'completed']
-            .contains(key)) {
-          await _updateStatus(key);
-        } else {
-          await _updateStage(key);
-        }
-      },
-    );
-  }
-
   String _getStatusText(String? status) {
     switch (status) {
       case 'in_progress':
-        return 'قيد التنفيذ';
-      case 'pending_approval':
-        return 'قيد المراجعة';
-      case 'approved':
-        return 'معتمد';
+        return 'قيد العمل';
       case 'completed':
         return 'مكتمل';
+      case 'delayed':
+        return 'متأخر';
       default:
-        return status ?? 'غير محدد';
+        return 'غير محدد';
     }
   }
 
@@ -439,12 +450,10 @@ class _ProjectDetailsState extends State<ProjectDetails> {
     switch (status) {
       case 'in_progress':
         return Colors.orange;
-      case 'pending_approval':
-        return Colors.purple;
-      case 'approved':
-        return Colors.blue;
       case 'completed':
         return Colors.green;
+      case 'delayed':
+        return Colors.red;
       default:
         return Colors.grey;
     }
@@ -458,8 +467,6 @@ class _ProjectDetailsState extends State<ProjectDetails> {
         return 'خطة البحث';
       case 'field':
         return 'الدراسة الميدانية';
-      case 'writing':
-        return 'الكتابة';
       case 'final':
         return 'البحث النهائي';
       default:
@@ -469,6 +476,6 @@ class _ProjectDetailsState extends State<ProjectDetails> {
 
   String _formatDate(DateTime? date) {
     if (date == null) return '';
-    return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+    return '${date.year}/${date.month}/${date.day}';
   }
 }

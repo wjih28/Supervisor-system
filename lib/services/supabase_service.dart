@@ -8,7 +8,6 @@ class SupabaseService {
   static Future<Map<String, dynamic>?> loginSupervisor(
       String username, String password) async {
     try {
-      // محاولة تسجيل الدخول باستخدام اسم المستخدم أو البريد الإلكتروني
       final response = await client
           .from('supervisor')
           .select()
@@ -42,6 +41,76 @@ class SupabaseService {
           .toList();
     } catch (e) {
       print('Error fetching groups: $e');
+      return [];
+    }
+  }
+
+  // جلب بيانات المشروع بواسطة المعرف
+  static Future<ResearchGroup?> getProjectById(int id) async {
+    try {
+      final response = await client
+          .from('groups')
+          .select()
+          .eq('group_id', id)
+          .maybeSingle();
+
+      if (response != null) {
+        return ResearchGroup.fromJson(response);
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching project: $e');
+      return null;
+    }
+  }
+
+  // جلب طلاب مجموعة معينة
+  static Future<List<Student>> getGroupStudents(int groupId) async {
+    try {
+      final response = await client
+          .from('student')
+          .select()
+          .eq('id_group', groupId);
+
+      return (response as List)
+          .map((json) => Student.fromJson(json))
+          .toList();
+    } catch (e) {
+      print('Error fetching group students: $e');
+      return [];
+    }
+  }
+
+  // جلب تعليقات وملاحظات مشروع معين
+  static Future<List<ProjectFeedback>> getProjectFeedback(int projectId) async {
+    try {
+      final response = await client
+          .from('review_comments')
+          .select()
+          .eq('id_group', projectId);
+
+      return (response as List)
+          .map((json) => ProjectFeedback.fromJson(json))
+          .toList();
+    } catch (e) {
+      print('Error fetching project feedback: $e');
+      return [];
+    }
+  }
+
+  // جلب ملفات مشروع معين حسب المرحلة
+  static Future<List<ProjectFile>> getProjectFiles(int projectId, {String? stage}) async {
+    try {
+      var query = client.from('research_files').select().eq('id_group', projectId);
+      if (stage != null) {
+        query = query.eq('file_stage', stage);
+      }
+      final response = await query;
+      return (response as List)
+          .map((json) => ProjectFile.fromJson(json))
+          .toList();
+    } catch (e) {
+      print('Error fetching project files: $e');
       return [];
     }
   }
@@ -103,12 +172,15 @@ class SupabaseService {
     }
   }
 
-  // تحديث حالة المجموعة
-  static Future<bool> updateGroupStatus(int groupId, String status) async {
+  // تحديث حالة المجموعة ونسبة الإنجاز
+  static Future<bool> updateGroupStatus(int groupId, String status, double progress) async {
     try {
       await client
           .from('groups')
-          .update({'group_status': status})
+          .update({
+            'group_status': status,
+            'group_progress': progress,
+          })
           .eq('group_id', groupId);
       return true;
     } catch (e) {
@@ -117,7 +189,66 @@ class SupabaseService {
     }
   }
 
-  // إضافة تعليق مراجعة
+  // تحديث مرحلة المشروع
+  static Future<bool> updateProjectStage(int projectId, String stage) async {
+    try {
+      await client
+          .from('groups')
+          .update({'current_stage': stage})
+          .eq('group_id', projectId);
+      return true;
+    } catch (e) {
+      print('Error updating project stage: $e');
+      return false;
+    }
+  }
+
+  // إضافة ملاحظة مشرف على ملف
+  static Future<bool> addSupervisorNote(int fileId, String note) async {
+    try {
+      await client
+          .from('research_files')
+          .update({'supervisor_notes': note})
+          .eq('file_id', fileId);
+      return true;
+    } catch (e) {
+      print('Error adding supervisor note: $e');
+      return false;
+    }
+  }
+
+  // إضافة ملاحظة/تعليق مراجعة على المشروع
+  static Future<bool> addProjectFeedback(int projectId, int supervisorId, String stage, String comment) async {
+    try {
+      await client.from('review_comments').insert({
+        'id_group': projectId,
+        'id_sprvsr': supervisorId,
+        'comment_text': comment,
+        'comment_stage': stage,
+        'is_resolved': false,
+      });
+      return true;
+    } catch (e) {
+      print('Error adding project feedback: $e');
+      return false;
+    }
+  }
+
+  // حل ملاحظة/تعليق مراجعة
+  static Future<bool> resolveFeedback(int feedbackId) async {
+    try {
+      await client
+          .from('review_comments')
+          .update({'is_resolved': true})
+          .eq('comment_id', feedbackId);
+      return true;
+    } catch (e) {
+      print('Error resolving feedback: $e');
+      return false;
+    }
+  }
+
+  // إضافة تعليق مراجعة (كائن)
   static Future<bool> addReviewComment(ReviewComment comment) async {
     try {
       await client.from('review_comments').insert(comment.toJson());
@@ -128,7 +259,7 @@ class SupabaseService {
     }
   }
 
-  // تحديث تعليق مراجعة
+  // تحديث تعليق مراجعة (كائن)
   static Future<bool> updateReviewComment(ReviewComment comment) async {
     try {
       if (comment.id == null) return false;
