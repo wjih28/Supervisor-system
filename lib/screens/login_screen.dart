@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:graduation_research_management/models/models.dart';
 import '../../services/supabase_service.dart';
 import 'supervisor_dashboard.dart';
 

@@ -68,6 +68,16 @@ class Supervisor {
       isActive: json["sprvsr_isactive"],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "sprvsr_name": name,
+      "sprvsr_email": email,
+      "sprvsr_password": password,
+      "sprvsr_username": username,
+      "sprvsr_isactive": isActive,
+    };
+  }
 }
 
 class ResearchGroup {
@@ -144,6 +154,18 @@ class ResearchGroup {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "group_name": name,
+      "id_sprvsr": supervisorId,
+      "id_group_state": stateId,
+      "group_led_id": leaderId,
+      "group_description": description,
+      "group_progress": progress,
+      "group_status": status,
+    };
   }
 }
 
@@ -282,6 +304,17 @@ class ReviewComment {
       isResolved: json["is_resolved"],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id_group": groupId,
+      "id_sprvsr": supervisorId,
+      "comment_text": comment,
+      "comment_type": commentType,
+      "comment_rating": rating,
+      "is_resolved": isResolved,
+    };
+  }
 }
 
 class ProjectStage {
@@ -327,6 +360,20 @@ class ProjectStage {
       status: json["stage_status"],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id_group": groupId,
+      "stage_name": stageName,
+      "stage_description": description,
+      "is_completed": isCompleted,
+      "start_date": startDate?.toIso8601String(),
+      "end_date": endDate?.toIso8601String(),
+      "due_date": dueDate?.toIso8601String(),
+      "completion_percentage": completionPercentage,
+      "stage_status": status,
+    };
+  }
 }
 
 class Notification {
@@ -363,6 +410,17 @@ class Notification {
           ? DateTime.parse(json["created_at"])
           : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id_sprvsr": supervisorId,
+      "notification_title": title,
+      "notification_message": message,
+      "notification_type": notificationType,
+      "id_group": relatedGroupId,
+      "is_read": isRead,
+    };
   }
 }
 
@@ -404,6 +462,16 @@ class ProjectFeedback {
           : null,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id_group": projectId,
+      "id_sprvsr": supervisorId,
+      "comment_text": comment,
+      "comment_stage": stage,
+      "is_resolved": isResolved,
+    };
+  }
 }
 
 class Program {
@@ -424,6 +492,13 @@ class Program {
       departmentId: json["department_id"] ?? json["dep_id"],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "program_name": name,
+      "department_id": departmentId,
+    };
+  }
 }
 
 class Department {
@@ -440,6 +515,12 @@ class Department {
       id: json["dep_id"] ?? json["department_id"],
       name: json["dep_name"] ?? json["name"] ?? "",
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "dep_name": name,
+    };
   }
 }
 

@@ -311,47 +311,44 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1A1A1A),
               ),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.right,
             ),
           ),
+          const SizedBox(width: 20),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.notifications_outlined, color: Colors.grey),
+          ),
+          const SizedBox(width: 12),
           Row(
             children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_none, color: Colors.grey, size: 24),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/supervisor/notifications');
-                },
-              ),
-              const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     _supervisorName,
                     style: const TextStyle(
-                      fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1A1A),
+                      fontSize: 14,
                     ),
                   ),
-                  const Text(
-                    'المشرف الأكاديمي',
+                  Text(
+                    'مشرف أكاديمي',
                     style: TextStyle(
-                      color: Colors.grey,
+                      color: Colors.grey.shade500,
                       fontSize: 12,
                     ),
                   ),
                 ],
               ),
               const SizedBox(width: 12),
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2D62ED),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.person, color: Colors.white, size: 20),
+              const CircleAvatar(
+                backgroundColor: Color(0xFF2D62ED),
+                child: Icon(Icons.person, color: Colors.white),
               ),
             ],
           ),
@@ -366,126 +363,56 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade100),
+          const Text(
+            'نظرة عامة',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2D62ED),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.dashboard, color: Colors.white, size: 20),
-                          SizedBox(width: 8),
-                          Text(
-                            'لوحة التحكم',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const Text(
-                          'لوحة التحكم',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A1A1A),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'مرحباً بك $_supervisorName',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              buildInfoCard('عدد الأبحاث التي أشرف عليها', _totalProjects.toString(), const Color(0xFF2D62ED)),
-              const SizedBox(width: 20),
-              buildInfoCard('القسم', _departmentName, const Color(0xFF6C63FF)),
-              const SizedBox(width: 20),
-              buildInfoCard('البرنامج', _programName, const Color(0xFF00C9A7)),
-            ],
           ),
           const SizedBox(height: 24),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              buildSmallStatCard('قيد التنفيذ', _inProgressProjects.toString(), Colors.orange, Icons.play_circle_outline),
+              buildInfoCard('إجمالي المجموعات', _totalProjects.toString(), const Color(0xFF2D62ED)),
               const SizedBox(width: 20),
-              buildSmallStatCard('قيد المراجعة', _pendingProjects.toString(), Colors.purple, Icons.pending_actions_outlined),
+              buildInfoCard('مجموعات قيد العمل', _inProgressProjects.toString(), const Color(0xFFF9A825)),
               const SizedBox(width: 20),
-              buildSmallStatCard('مكتملة', _completedProjects.toString(), Colors.green, Icons.check_circle_outline),
+              buildInfoCard('مجموعات مكتملة', _completedProjects.toString(), const Color(0xFF4CAF50)),
+            ],
+          ),
+          const SizedBox(height: 32),
+          Row(
+            children: [
+              buildSmallStatCard('طلبات معلقة', _pendingProjects.toString(), Colors.orange, Icons.pending_actions),
+              const SizedBox(width: 20),
+              buildSmallStatCard('مراجعات مطلوبة', _pendingReviews.toString(), Colors.blue, Icons.rate_review_outlined),
             ],
           ),
           const SizedBox(height: 40),
           const Text(
-            'نسبة إنجاز الأبحاث',
+            'المجموعات البحثية الحالية',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Color(0xFF1A1A1A),
             ),
           ),
           const SizedBox(height: 20),
-          if (_groups.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(40),
-                child: Column(
-                  children: [
-                    Icon(Icons.folder_open, size: 64, color: Colors.grey.shade300),
-                    const SizedBox(height: 16),
-                    Text('لا توجد مشاريع حالياً', style: TextStyle(color: Colors.grey.shade500)),
-                  ],
+          _groups.isEmpty
+              ? const Center(child: Text('لا توجد مجموعات حالياً'))
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 1.5,
+                  ),
+                  itemCount: _groups.length,
+                  itemBuilder: (context, index) => buildGroupCard(_groups[index]),
                 ),
-              ),
-            )
-          else
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-                childAspectRatio: 1.8,
-              ),
-              itemCount: _groups.length,
-              itemBuilder: (context, index) {
-                return buildGroupCard(_groups[index]);
-              },
-            ),
         ],
       ),
     );
@@ -590,569 +517,6 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
   Widget buildGroupCard(ResearchGroup group) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          '/supervisor/project_details',
-          arguments: group.id,
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.grey.shade100),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade100,
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (group.status == 'delayed')
-                  const Icon(Icons.error_outline, color: Colors.red, size: 20),
-                Expanded(
-                  child: Text(
-                    group.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1A1A),
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'قائد الفريق: ${group.leaderId != null ? 'ID ${group.leaderId}' : 'غير محدد'}',
-              style: const TextStyle(
-                color: Color(0xFF2D62ED),
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.right,
-            ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${((group.progress ?? 0) * 100).toInt()}%',
-                  style: const TextStyle(
-                    color: Color(0xFF1A1A1A),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-                const Text(
-                  'نسبة الإنجاز',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: LinearProgressIndicator(
-                value: group.progress ?? 0,
-                backgroundColor: Colors.grey.shade100,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  group.status == 'delayed'
-                      ? Colors.red
-                      : group.status == 'completed'
-                          ? Colors.green
-                          : const Color(0xFF2D62ED),
-                ),
-                minHeight: 8,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildTopBar() {
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Graduation Research Management',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey.shade500,
-                        ),
-                        textAlign: TextAlign.right,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2D62ED),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child:
-                      const Icon(Icons.school, color: Colors.white, size: 24),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 40),
-          // Navigation Items
-          buildSidebarItem(0, Icons.dashboard_outlined, 'لوحة التحكم'),
-          const SizedBox(height: 8),
-          buildSidebarItem(1, Icons.groups_outlined, 'إدارة المجموعات'),
-          const SizedBox(height: 8),
-          buildSidebarItem(2, Icons.chat_bubble_outline, 'الدردشات'),
-          const SizedBox(height: 8),
-          buildSidebarItem(3, Icons.grade_outlined, 'إدخال الدرجات النهائية'),
-          const SizedBox(height: 8),
-          buildSidebarItem(4, Icons.settings_outlined, 'الإعدادات'),
-          const Spacer(),
-          const Divider(),
-          buildSidebarItem(5, Icons.logout, 'تسجيل الخروج', isLogout: true),
-          const SizedBox(height: 20),
-        ],
-      ),
-    );
-  }
-
-  Widget buildSidebarItem(int index, IconData icon, String title,
-      {bool isLogout = false}) {
-    bool isSelected = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () {
-        if (isLogout) {
-          // تسجيل الخروج
-          Navigator.pushReplacementNamed(context, '/login');
-        } else {
-          setState(() => _selectedIndex = index);
-          onNavigationItemSelected(index);
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF2D62ED) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey.shade700,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : Colors.grey.shade600,
-              size: 22,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void onNavigationItemSelected(int index) {
-    switch (index) {
-      case 1:
-        // إدارة المجموعات - عرض قائمة المشاريع
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SupervisorProjectsList(
-              supervisorId: widget.supervisor?.id ?? 0,
-              supervisorName: _supervisorName,
-            ),
-          ),
-        );
-        break;
-      case 2:
-        // الدردشات (سيتم إضافتها لاحقاً)
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('قريباً: نظام الدردشات')),
-        );
-        break;
-      case 3:
-        // إدخال الدرجات
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GradesEntry(
-              supervisorId: widget.supervisor?.id ?? 0,
-            ),
-          ),
-        );
-        break;
-      case 4:
-        // الإعدادات (سيتم إضافتها لاحقاً)
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('قريباً: الإعدادات')),
-        );
-        break;
-    }
-  }
-
-  Widget buildTopBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-      color: Colors.white,
-      child: Row(
-        children: [
-          // Right side - System name
-          const Expanded(
-            child: Text(
-              'نظام إدارة ومتابعة أبحاث التخرج',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1A1A),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          // Left side - User info and notifications
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_none,
-                    color: Colors.grey, size: 24),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/supervisor/notifications');
-                },
-              ),
-              const SizedBox(width: 8),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    _supervisorName,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1A1A),
-                    ),
-                  ),
-                  const Text(
-                    'المشرف الأكاديمي',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 12),
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2D62ED),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.person, color: Colors.white, size: 20),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildMainContent() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // Welcome Section
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade100),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2D62ED),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.dashboard, color: Colors.white, size: 20),
-                          SizedBox(width: 8),
-                          Text(
-                            'لوحة التحكم',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        const Text(
-                          'لوحة التحكم',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A1A1A),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'مرحباً بك $_supervisorName',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-          // Stats Cards
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              buildInfoCard(
-                'عدد الأبحاث التي أشرف عليها',
-                _totalProjects.toString(),
-                const Color(0xFF2D62ED),
-              ),
-              const SizedBox(width: 20),
-              buildInfoCard(
-                'القسم',
-                _departmentName,
-                const Color(0xFF6C63FF),
-              ),
-              const SizedBox(width: 20),
-              buildInfoCard(
-                'البرنامج',
-                _programName,
-                const Color(0xFF00C9A7),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          // Additional Stats - Progress Overview
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              buildSmallStatCard(
-                'قيد التنفيذ',
-                _inProgressProjects.toString(),
-                Colors.orange,
-                Icons.play_circle_outline,
-              ),
-              const SizedBox(width: 20),
-              buildSmallStatCard(
-                'قيد المراجعة',
-                _pendingProjects.toString(),
-                Colors.purple,
-                Icons.pending_actions_outlined,
-              ),
-              const SizedBox(width: 20),
-              buildSmallStatCard(
-                'مكتملة',
-                _completedProjects.toString(),
-                Colors.green,
-                Icons.check_circle_outline,
-              ),
-            ],
-          ),
-          const SizedBox(height: 40),
-          // Research Progress Section
-          const Text(
-            'نسبة إنجاز الأبحاث',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A1A),
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Groups Grid
-          if (_groups.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(40),
-                child: Column(
-                  children: [
-                    Icon(Icons.folder_open,
-                        size: 64, color: Colors.grey.shade300),
-                    const SizedBox(height: 16),
-                    Text(
-                      'لا توجد مشاريع حالياً',
-                      style: TextStyle(color: Colors.grey.shade500),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-                childAspectRatio: 1.8,
-              ),
-              itemCount: _groups.length,
-              itemBuilder: (context, index) {
-                return buildGroupCard(_groups[index]);
-              },
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildInfoCard(String title, String value, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.2),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.right,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              value,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.right,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildSmallStatCard(
-      String title, String value, Color color, IconData icon) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade100),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade50,
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildGroupCard(ResearchGroup group) {
-    return GestureDetector(
-      onTap: () {
-        // الانتقال إلى صفحة تفاصيل المشروع
         Navigator.pushNamed(
           context,
           '/supervisor/project_details',
