@@ -215,7 +215,7 @@ class SupabaseService {
       print('Error adding supervisor note: $e');
       return false;
     }
-  }
+    }
 
   // إضافة ملاحظة/تعليق مراجعة على المشروع
   static Future<bool> addProjectFeedback(int projectId, int supervisorId, String stage, String comment) async {
@@ -281,6 +281,113 @@ class SupabaseService {
       return true;
     } catch (e) {
       print('Error sending notification: $e');
+      return false;
+    }
+  }
+
+  // الدوال المضافة لدعم SupervisorProvider
+  static Future<Map<String, dynamic>?> getSupervisorStatistics(int supervisorId) async {
+    try {
+      // هذه دالة وهمية، يجب استبدالها بمنطق جلب الإحصائيات الفعلي من Supabase
+      // قد تحتاج إلى استعلامات معقدة أو دوال في Supabase لإنشاء هذه الإحصائيات
+      return {
+        'totalProjects': 10,
+        'completedProjects': 5,
+        'inProgressProjects': 3,
+        'pendingProjects': 2,
+        'pendingReviews': 4,
+      };
+    } catch (e) {
+      print('Error fetching supervisor statistics: $e');
+      return null;
+    }
+  }
+
+  static Future<List<ReviewComment>> getCommentsByGroup(int groupId) async {
+    try {
+      final response = await client
+          .from('review_comments')
+          .select()
+          .eq('id_group', groupId);
+      return (response as List)
+          .map((json) => ReviewComment.fromJson(json))
+          .toList();
+    } catch (e) {
+      print('Error fetching comments by group: $e');
+      return [];
+    }
+  }
+
+  static Future<List<ProjectFile>> getFilesByGroup(int groupId) async {
+    try {
+      final response = await client
+          .from('research_files')
+          .select()
+          .eq('id_group', groupId);
+      return (response as List)
+          .map((json) => ProjectFile.fromJson(json))
+          .toList();
+    } catch (e) {
+      print('Error fetching files by group: $e');
+      return [];
+    }
+  }
+
+  static Future<List<ProjectStage>> getProjectStages(int groupId) async {
+    try {
+      // هذه دالة وهمية، يجب استبدالها بمنطق جلب مراحل المشروع الفعلي من Supabase
+      // قد تحتاج إلى جدول منفصل للمراحل أو استخلاصها من بيانات المشروع
+      return [
+        ProjectStage(id: 1, name: 'المقترح', status: 'completed', completionPercentage: 1.0),
+        ProjectStage(id: 2, name: 'خطة البحث', status: 'in_progress', completionPercentage: 0.7),
+        ProjectStage(id: 3, name: 'البحث النهائي', status: 'pending', completionPercentage: 0.0),
+      ];
+    } catch (e) {
+      print('Error fetching project stages: $e');
+      return [];
+    }
+  }
+
+  static Future<bool> addComment(ReviewComment comment) async {
+    try {
+      await client.from('review_comments').insert(comment.toJson());
+      return true;
+    } catch (e) {
+      print('Error adding comment: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> updateComment(int commentId, ReviewComment comment) async {
+    try {
+      await client
+          .from('review_comments')
+          .update(comment.toJson())
+          .eq('comment_id', commentId);
+      return true;
+    } catch (e) {
+      print('Error updating comment: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> deleteComment(int commentId) async {
+    try {
+      await client.from('review_comments').delete().eq('comment_id', commentId);
+      return true;
+    } catch (e) {
+      print('Error deleting comment: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> updateStageStatus(int stageId, String status, double completionPercentage) async {
+    try {
+      // هذه دالة وهمية، يجب استبدالها بمنطق تحديث حالة المرحلة الفعلي في Supabase
+      print('Updating stage $stageId to status $status with $completionPercentage%');
+      return true;
+    } catch (e) {
+      print('Error updating stage status: $e');
       return false;
     }
   }

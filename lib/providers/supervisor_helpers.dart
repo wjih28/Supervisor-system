@@ -12,6 +12,7 @@ class SupervisorHelpers {
         return Colors.orange;
       case 'delayed':
         return Colors.red;
+      case 'pending_approval':
       case 'pending':
         return Colors.grey;
       default:
@@ -28,6 +29,8 @@ class SupervisorHelpers {
         return 'قيد التنفيذ';
       case 'delayed':
         return 'متأخرة';
+      case 'pending_approval':
+        return 'بانتظار الموافقة';
       case 'pending':
         return 'قيد الانتظار';
       default:
@@ -44,50 +47,9 @@ class SupervisorHelpers {
         return Icons.hourglass_bottom;
       case 'delayed':
         return Icons.warning;
+      case 'pending_approval':
       case 'pending':
         return Icons.schedule;
-      default:
-        return Icons.info;
-    }
-  }
-
-  /// الحصول على لون نوع الملاحظة
-  static Color getCommentTypeColor(String? type) {
-    switch (type) {
-      case 'note':
-        return Colors.blue;
-      case 'suggestion':
-        return Colors.green;
-      case 'issue':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  /// الحصول على تسمية نوع الملاحظة بالعربية
-  static String getCommentTypeLabel(String? type) {
-    switch (type) {
-      case 'note':
-        return 'ملاحظة';
-      case 'suggestion':
-        return 'اقتراح';
-      case 'issue':
-        return 'مشكلة';
-      default:
-        return 'غير محدد';
-    }
-  }
-
-  /// الحصول على أيقونة نوع الملاحظة
-  static IconData getCommentTypeIcon(String? type) {
-    switch (type) {
-      case 'note':
-        return Icons.note;
-      case 'suggestion':
-        return Icons.lightbulb;
-      case 'issue':
-        return Icons.error;
       default:
         return Icons.info;
     }
@@ -222,7 +184,9 @@ class SupervisorHelpers {
   static bool isProjectDelayed(ResearchGroup group) {
     if (group.status == 'delayed') return true;
     if (group.status == 'completed') return false;
-    return group.progress ?? 0.0 < 0.5; // إذا كان التقدم أقل من 50% فهو متأخر
+    // Consider a project delayed if it's past a certain point in time without enough progress
+    // This logic is simplified and can be expanded based on project deadlines.
+    return group.progress ?? 0.0 < 0.5; 
   }
 
   /// الحصول على تحذير التأخر
@@ -235,51 +199,29 @@ class SupervisorHelpers {
   static List<ResearchGroup> sortByPriority(List<ResearchGroup> groups) {
     final sorted = [...groups];
     sorted.sort((a, b) {
-      // الأولوية الأولى: المشاريع المتأخرة
+      // Priority 1: Delayed projects
       if (a.status == 'delayed' && b.status != 'delayed') return -1;
       if (a.status != 'delayed' && b.status == 'delayed') return 1;
 
-      // الأولوية الثانية: المشاريع قيد التنفيذ
+      // Priority 2: In-progress projects
       if (a.status == 'in_progress' && b.status != 'in_progress') return -1;
       if (a.status != 'in_progress' && b.status == 'in_progress') return 1;
 
-      // الأولوية الثالثة: حسب التقدم (الأقل تقدماً أولاً)
+      // Priority 3: By progress (less progress first)
       return (a.progress ?? 0.0).compareTo(b.progress ?? 0.0);
     });
     return sorted;
   }
 
-  /// التحقق من الملاحظات المهمة
-  static bool hasImportantComments(List<ReviewComment> comments) {
-    return comments
-        .any((c) => c.commentType == 'issue' && c.isResolved == false);
-  }
-
-  /// عد الملاحظات حسب النوع
-  static Map<String, int> countCommentsByType(List<ReviewComment> comments) {
-    final counts = {
-      'note': 0,
-      'suggestion': 0,
-      'issue': 0,
-    };
-
-    for (final comment in comments) {
-      final type = comment.commentType ?? 'note';
-      counts[type] = (counts[type] ?? 0) + 1;
-    }
-
-    return counts;
-  }
-
   /// التحقق من وجود ملفات جديدة
-  static bool hasNewFiles(List<ResearchFile> files) {
+  static bool hasNewFiles(List<ProjectFile> files) {
     final oneDayAgo = DateTime.now().subtract(const Duration(days: 1));
     return files
         .any((f) => f.uploadedAt != null && f.uploadedAt!.isAfter(oneDayAgo));
   }
 
   /// الحصول على الملفات المرتبة حسب التاريخ
-  static List<ResearchFile> sortFilesByDate(List<ResearchFile> files) {
+  static List<ProjectFile> sortFilesByDate(List<ProjectFile> files) {
     final sorted = [...files];
     sorted.sort((a, b) {
       final dateA = a.uploadedAt ?? DateTime(1970);
@@ -287,22 +229,6 @@ class SupervisorHelpers {
       return dateB.compareTo(dateA);
     });
     return sorted;
-  }
-
-  /// الحصول على الملفات حسب النوع
-  static Map<String, List<ResearchFile>> groupFilesByType(
-      List<ResearchFile> files) {
-    final grouped = <String, List<ResearchFile>>{};
-
-    for (final file in files) {
-      final type = file.fileType ?? 'unknown';
-      if (!grouped.containsKey(type)) {
-        grouped[type] = [];
-      }
-      grouped[type]!.add(file);
-    }
-
-    return grouped;
   }
 
   /// التحقق من صحة بيانات المجموعة
@@ -313,8 +239,8 @@ class SupervisorHelpers {
   }
 
   /// التحقق من صحة بيانات الملاحظة
-  static bool isValidComment(ReviewComment comment) {
-    return comment.groupId != null &&
+  static bool isValidComment(ProjectFeedback comment) {
+    return comment.projectId != null &&
         comment.supervisorId != null &&
         comment.comment.isNotEmpty;
   }
@@ -331,22 +257,5 @@ class SupervisorHelpers {
     }
 
     return '';
-  }
-
-  /// الحصول على رسالة تشجيع للمشرف
-  static String getEncouragingMessage(Map<String, dynamic>? statistics) {
-    if (statistics == null) return '';
-
-    final completionRate = statistics['completionRate'] as double? ?? 0.0;
-
-    if (completionRate >= 80) {
-      return 'ممتاز! معدل الإنجاز لديك ${completionRate.toStringAsFixed(1)}%';
-    } else if (completionRate >= 60) {
-      return 'جيد! معدل الإنجاز لديك ${completionRate.toStringAsFixed(1)}%';
-    } else if (completionRate >= 40) {
-      return 'يمكن تحسينه. معدل الإنجاز لديك ${completionRate.toStringAsFixed(1)}%';
-    }
-
-    return 'يحتاج إلى متابعة أكثر. معدل الإنجاز لديك ${completionRate.toStringAsFixed(1)}%';
   }
 }

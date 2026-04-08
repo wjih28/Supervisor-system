@@ -17,8 +17,8 @@ class SupervisorProvider extends ChangeNotifier {
   bool _isLoadingFiles = false;
   bool _isLoadingStages = false;
   // البيانات المخزنة مؤقتاً
-  final Map<int, List<ReviewComment>> _groupComments = {};
-  final Map<int, List<ResearchFile>> _groupFiles = {};
+  final Map<int, List<ProjectFeedback>> _groupComments = {}; // Changed to ProjectFeedback
+  final Map<int, List<ProjectFile>> _groupFiles = {};
   final Map<int, List<ProjectStage>> _groupStages = {};
 
   // حالة البحث والتصفية
@@ -90,7 +90,7 @@ class SupervisorProvider extends ChangeNotifier {
   }
 
   /// تحميل الملاحظات لمجموعة معينة
-  Future<List<ReviewComment>> loadGroupComments(int groupId) async {
+  Future<List<ProjectFeedback>> loadGroupComments(int groupId) async {
     if (_groupComments.containsKey(groupId)) {
       return _groupComments[groupId]!;
     }
@@ -99,7 +99,7 @@ class SupervisorProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final comments = await SupabaseService.getCommentsByGroup(groupId);
+      final comments = await SupabaseService.getProjectFeedback(groupId); // Changed to getProjectFeedback
       _groupComments[groupId] = comments;
       return comments;
     } catch (e) {
@@ -112,7 +112,7 @@ class SupervisorProvider extends ChangeNotifier {
   }
 
   /// تحميل الملفات لمجموعة معينة
-  Future<List<ResearchFile>> loadGroupFiles(int groupId) async {
+  Future<List<ProjectFile>> loadGroupFiles(int groupId) async {
     if (_groupFiles.containsKey(groupId)) {
       return _groupFiles[groupId]!;
     }
@@ -121,7 +121,7 @@ class SupervisorProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final files = await SupabaseService.getFilesByGroup(groupId);
+      final files = await SupabaseService.getProjectFiles(groupId); // Changed to getProjectFiles
       _groupFiles[groupId] = files;
       return files;
     } catch (e) {
@@ -211,13 +211,13 @@ class SupervisorProvider extends ChangeNotifier {
   // ============ وظائف تحديث البيانات ============
 
   /// إضافة ملاحظة جديدة
-  Future<bool> addComment(int groupId, ReviewComment comment) async {
+  Future<bool> addComment(int projectId, int supervisorId, String stage, String commentText) async {
     try {
-      final success = await SupabaseService.addComment(comment);
+      final success = await SupabaseService.addProjectFeedback(projectId, supervisorId, stage, commentText);
       if (success) {
         // تحديث الملاحظات المخزنة مؤقتاً
-        if (_groupComments.containsKey(groupId)) {
-          _groupComments[groupId]!.insert(0, comment);
+        if (_groupComments.containsKey(projectId)) {
+          _groupComments[projectId]!.insert(0, ProjectFeedback(id: null, projectId: projectId, supervisorId: supervisorId, stage: stage, comment: commentText, createdAt: DateTime.now(), isResolved: false));
         }
         notifyListeners();
       }
@@ -230,9 +230,9 @@ class SupervisorProvider extends ChangeNotifier {
 
   /// تحديث ملاحظة موجودة
   Future<bool> updateComment(
-      int groupId, int commentId, ReviewComment comment) async {
+      int groupId, int commentId, ProjectFeedback comment) async {
     try {
-      final success = await SupabaseService.updateComment(commentId, comment);
+      final success = await SupabaseService.updateReviewComment(comment); // Changed to updateReviewComment
       if (success) {
         // تحديث الملاحظات المخزنة مؤقتاً
         if (_groupComments.containsKey(groupId)) {
@@ -291,6 +291,7 @@ class SupervisorProvider extends ChangeNotifier {
             status: status,
             createdAt: group.createdAt,
             updatedAt: DateTime.now(),
+            currentStage: group.currentStage, // Added missing field
           );
         }
         notifyListeners();
