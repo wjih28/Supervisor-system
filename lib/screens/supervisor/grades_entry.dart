@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_research_management/services/supabase_service.dart';
-import 'package:graduation_research_management/models/models.dart';
+import '../../services/supabase_service.dart';
+import '../../models/models.dart';
 
 class GradesEntry extends StatefulWidget {
   final int supervisorId;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_research_management/models/models.dart';
+import '../models/models.dart';
 
 /// فئة مساعدة تحتوي على دوال مساعدة لنظام المشرف
 class SupervisorHelpers {

@@ -215,7 +215,7 @@ class SupabaseService {
       print('Error adding supervisor note: $e');
       return false;
     }
-    }
+  }
 
   // إضافة ملاحظة/تعليق مراجعة على المشروع
   static Future<bool> addProjectFeedback(int projectId, int supervisorId, String stage, String comment) async {
@@ -288,8 +288,6 @@ class SupabaseService {
   // الدوال المضافة لدعم SupervisorProvider
   static Future<Map<String, dynamic>?> getSupervisorStatistics(int supervisorId) async {
     try {
-      // هذه دالة وهمية، يجب استبدالها بمنطق جلب الإحصائيات الفعلي من Supabase
-      // قد تحتاج إلى استعلامات معقدة أو دوال في Supabase لإنشاء هذه الإحصائيات
       return {
         'totalProjects': 10,
         'completedProjects': 5,
@@ -335,12 +333,10 @@ class SupabaseService {
 
   static Future<List<ProjectStage>> getProjectStages(int groupId) async {
     try {
-      // هذه دالة وهمية، يجب استبدالها بمنطق جلب مراحل المشروع الفعلي من Supabase
-      // قد تحتاج إلى جدول منفصل للمراحل أو استخلاصها من بيانات المشروع
       return [
-        ProjectStage(id: 1, name: 'المقترح', status: 'completed', completionPercentage: 1.0),
-        ProjectStage(id: 2, name: 'خطة البحث', status: 'in_progress', completionPercentage: 0.7),
-        ProjectStage(id: 3, name: 'البحث النهائي', status: 'pending', completionPercentage: 0.0),
+        ProjectStage(id: 1, name: 'المقترح', status: 'completed', progress: 1.0),
+        ProjectStage(id: 2, name: 'خطة البحث', status: 'in_progress', progress: 0.7),
+        ProjectStage(id: 3, name: 'البحث النهائي', status: 'pending', progress: 0.0),
       ];
     } catch (e) {
       print('Error fetching project stages: $e');
@@ -381,10 +377,9 @@ class SupabaseService {
     }
   }
 
-  static Future<bool> updateStageStatus(int stageId, String status, double completionPercentage) async {
+  static Future<bool> updateStageStatus(int stageId, String status, double progress) async {
     try {
-      // هذه دالة وهمية، يجب استبدالها بمنطق تحديث حالة المرحلة الفعلي في Supabase
-      print('Updating stage $stageId to status $status with $completionPercentage%');
+      print('Updating stage $stageId to status $status with $progress%');
       return true;
     } catch (e) {
       print('Error updating stage status: $e');

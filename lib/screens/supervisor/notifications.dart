@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_research_management/models/models.dart'
+import '../../models/models.dart'
     as app_models;
 
 class Notifications extends StatefulWidget {

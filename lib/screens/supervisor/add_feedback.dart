@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_research_management/services/supabase_service.dart';
+import '../../services/supabase_service.dart';
 
 class AddFeedback extends StatefulWidget {
   final int projectId;

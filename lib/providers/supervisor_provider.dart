@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:graduation_research_management/models/models.dart';
-import 'package:graduation_research_management/services/supabase_service.dart';
+import '../models/models.dart';
+import '../services/supabase_service.dart';
 
 /// مزود (Provider) لإدارة حالة المشرف والبيانات المتعلقة به
 class SupervisorProvider extends ChangeNotifier {
@@ -17,7 +17,7 @@ class SupervisorProvider extends ChangeNotifier {
   bool _isLoadingFiles = false;
   bool _isLoadingStages = false;
   // البيانات المخزنة مؤقتاً
-  final Map<int, List<ProjectFeedback>> _groupComments = {}; // Changed to ProjectFeedback
+  final Map<int, List<ProjectFeedback>> _groupComments = {};
   final Map<int, List<ProjectFile>> _groupFiles = {};
   final Map<int, List<ProjectStage>> _groupStages = {};
 
@@ -99,7 +99,7 @@ class SupervisorProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final comments = await SupabaseService.getProjectFeedback(groupId); // Changed to getProjectFeedback
+      final comments = await SupabaseService.getProjectFeedback(groupId);
       _groupComments[groupId] = comments;
       return comments;
     } catch (e) {
@@ -121,7 +121,7 @@ class SupervisorProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final files = await SupabaseService.getProjectFiles(groupId); // Changed to getProjectFiles
+      final files = await SupabaseService.getProjectFiles(groupId);
       _groupFiles[groupId] = files;
       return files;
     } catch (e) {
@@ -217,7 +217,15 @@ class SupervisorProvider extends ChangeNotifier {
       if (success) {
         // تحديث الملاحظات المخزنة مؤقتاً
         if (_groupComments.containsKey(projectId)) {
-          _groupComments[projectId]!.insert(0, ProjectFeedback(id: null, projectId: projectId, supervisorId: supervisorId, stage: stage, comment: commentText, createdAt: DateTime.now(), isResolved: false));
+          _groupComments[projectId]!.insert(0, ProjectFeedback(
+            id: null,
+            groupId: projectId,
+            supervisorId: supervisorId,
+            stage: stage,
+            comment: commentText,
+            createdAt: DateTime.now(),
+            isResolved: false
+          ));
         }
         notifyListeners();
       }
@@ -232,7 +240,7 @@ class SupervisorProvider extends ChangeNotifier {
   Future<bool> updateComment(
       int groupId, int commentId, ProjectFeedback comment) async {
     try {
-      final success = await SupabaseService.updateReviewComment(comment); // Changed to updateReviewComment
+      final success = await SupabaseService.updateReviewComment(comment);
       if (success) {
         // تحديث الملاحظات المخزنة مؤقتاً
         if (_groupComments.containsKey(groupId)) {
@@ -291,7 +299,7 @@ class SupervisorProvider extends ChangeNotifier {
             status: status,
             createdAt: group.createdAt,
             updatedAt: DateTime.now(),
-            currentStage: group.currentStage, // Added missing field
+            currentStage: group.currentStage,
           );
         }
         notifyListeners();
@@ -305,10 +313,10 @@ class SupervisorProvider extends ChangeNotifier {
 
   /// تحديث حالة المرحلة
   Future<bool> updateStageStatus(
-      int stageId, String status, double completionPercentage) async {
+      int stageId, String status, double progress) async {
     try {
       final success = await SupabaseService.updateStageStatus(
-          stageId, status, completionPercentage);
+          stageId, status, progress);
       if (success) {
         notifyListeners();
       }

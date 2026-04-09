@@ -48,6 +48,7 @@ class Supervisor {
   final String? password;
   final String? username;
   final bool? isActive;
+  final int? programId;
 
   Supervisor({
     this.id,
@@ -56,6 +57,7 @@ class Supervisor {
     this.password,
     this.username,
     this.isActive,
+    this.programId,
   });
 
   factory Supervisor.fromJson(Map<String, dynamic> json) {
@@ -63,9 +65,10 @@ class Supervisor {
       id: json["sprvsr_id"],
       name: json["sprvsr_name"],
       email: json["sprvsr_email"],
-      password: json["sprvsr_password"], // Corrected field name
+      password: json["sprvsr_password"],
       username: json["sprvsr_username"],
       isActive: json["sprvsr_isactive"],
+      programId: json["id_program"],
     );
   }
 
@@ -76,6 +79,7 @@ class Supervisor {
       "sprvsr_password": password,
       "sprvsr_username": username,
       "sprvsr_isactive": isActive,
+      "id_program": programId,
     };
   }
 }
@@ -87,9 +91,9 @@ class ResearchGroup {
   final int? stateId;
   final int? leaderId;
   final String? description;
-  double? progress; // Made mutable
-  String? status; // Made mutable
-  String? currentStage; // Added currentStage field
+  double? progress;
+  String? status;
+  String? currentStage;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -102,7 +106,7 @@ class ResearchGroup {
     this.description,
     this.progress,
     this.status,
-    this.currentStage, // Added to constructor
+    this.currentStage,
     this.createdAt,
     this.updatedAt,
   });
@@ -117,8 +121,7 @@ class ResearchGroup {
       description: json["group_description"],
       progress: (json["group_progress"] as num?)?.toDouble(),
       status: json["group_status"],
-      currentStage:
-          json["current_stage"], // Assuming current_stage might come from JSON
+      currentStage: json["current_stage"],
       createdAt: json["created_at"] != null
           ? DateTime.parse(json["created_at"])
           : null,
@@ -165,6 +168,7 @@ class ResearchGroup {
       "group_description": description,
       "group_progress": progress,
       "group_status": status,
+      "current_stage": currentStage,
     };
   }
 }
@@ -274,6 +278,7 @@ class ReviewComment {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final bool? isResolved;
+  final String? stage;
 
   ReviewComment({
     this.id,
@@ -285,6 +290,7 @@ class ReviewComment {
     this.createdAt,
     this.updatedAt,
     this.isResolved,
+    this.stage,
   });
 
   factory ReviewComment.fromJson(Map<String, dynamic> json) {
@@ -302,6 +308,7 @@ class ReviewComment {
           ? DateTime.parse(json["updated_at"])
           : null,
       isResolved: json["is_resolved"],
+      stage: json["comment_stage"],
     );
   }
 
@@ -313,32 +320,67 @@ class ReviewComment {
       "comment_type": commentType,
       "comment_rating": rating,
       "is_resolved": isResolved,
+      "comment_stage": stage,
     };
+  }
+}
+
+class ProjectFeedback extends ReviewComment {
+  ProjectFeedback({
+    super.id,
+    super.groupId,
+    super.supervisorId,
+    required super.comment,
+    super.commentType,
+    super.rating,
+    super.createdAt,
+    super.updatedAt,
+    super.isResolved,
+    super.stage,
+  });
+
+  factory ProjectFeedback.fromJson(Map<String, dynamic> json) {
+    return ProjectFeedback(
+      id: json["comment_id"],
+      groupId: json["id_group"],
+      supervisorId: json["id_sprvsr"],
+      comment: json["comment_text"],
+      commentType: json["comment_type"],
+      rating: json["comment_rating"],
+      createdAt: json["created_at"] != null
+          ? DateTime.parse(json["created_at"])
+          : null,
+      updatedAt: json["updated_at"] != null
+          ? DateTime.parse(json["updated_at"])
+          : null,
+      isResolved: json["is_resolved"],
+      stage: json["comment_stage"],
+    );
   }
 }
 
 class ProjectStage {
   final int? id;
   final int? groupId;
-  final String stageName;
+  final String name;
   final String? description;
   final bool? isCompleted;
   final DateTime? startDate;
   final DateTime? endDate;
   final DateTime? dueDate;
-  final double? completionPercentage;
+  final double? progress;
   final String? status;
 
   ProjectStage({
     this.id,
     this.groupId,
-    required this.stageName,
+    required this.name,
     this.description,
     this.isCompleted,
     this.startDate,
     this.endDate,
     this.dueDate,
-    this.completionPercentage,
+    this.progress,
     this.status,
   });
 
@@ -346,7 +388,7 @@ class ProjectStage {
     return ProjectStage(
       id: json["stage_id"],
       groupId: json["id_group"],
-      stageName: json["stage_name"],
+      name: json["stage_name"],
       description: json["stage_description"],
       isCompleted: json["is_completed"],
       startDate: json["start_date"] != null
@@ -356,7 +398,7 @@ class ProjectStage {
           json["end_date"] != null ? DateTime.parse(json["end_date"]) : null,
       dueDate:
           json["due_date"] != null ? DateTime.parse(json["due_date"]) : null,
-      completionPercentage: (json["completion_percentage"] as num?)?.toDouble(),
+      progress: (json["completion_percentage"] as num?)?.toDouble(),
       status: json["stage_status"],
     );
   }
@@ -364,112 +406,14 @@ class ProjectStage {
   Map<String, dynamic> toJson() {
     return {
       "id_group": groupId,
-      "stage_name": stageName,
+      "stage_name": name,
       "stage_description": description,
       "is_completed": isCompleted,
       "start_date": startDate?.toIso8601String(),
       "end_date": endDate?.toIso8601String(),
       "due_date": dueDate?.toIso8601String(),
-      "completion_percentage": completionPercentage,
+      "completion_percentage": progress,
       "stage_status": status,
-    };
-  }
-}
-
-class Notification {
-  final int? id;
-  final int? supervisorId;
-  final String title;
-  final String? message;
-  final String? notificationType;
-  final int? relatedGroupId;
-  final bool? isRead;
-  final DateTime? createdAt;
-
-  Notification({
-    this.id,
-    this.supervisorId,
-    required this.title,
-    this.message,
-    this.notificationType,
-    this.relatedGroupId,
-    this.isRead,
-    this.createdAt,
-  });
-
-  factory Notification.fromJson(Map<String, dynamic> json) {
-    return Notification(
-      id: json["notification_id"],
-      supervisorId: json["id_sprvsr"],
-      title: json["notification_title"],
-      message: json["notification_message"],
-      notificationType: json["notification_type"],
-      relatedGroupId: json["id_group"],
-      isRead: json["is_read"],
-      createdAt: json["created_at"] != null
-          ? DateTime.parse(json["created_at"])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id_sprvsr": supervisorId,
-      "notification_title": title,
-      "notification_message": message,
-      "notification_type": notificationType,
-      "id_group": relatedGroupId,
-      "is_read": isRead,
-    };
-  }
-}
-
-class ProjectFeedback {
-  final int? id;
-  final int? projectId;
-  final int? supervisorId;
-  final String comment;
-  final String? notes;
-  final String? stage;
-  final bool? isResolved;
-  final String? supervisorName;
-  final DateTime? createdAt;
-
-  ProjectFeedback({
-    this.id,
-    this.projectId,
-    this.supervisorId,
-    required this.comment,
-    this.notes,
-    this.stage,
-    this.isResolved,
-    this.supervisorName,
-    this.createdAt,
-  });
-
-  factory ProjectFeedback.fromJson(Map<String, dynamic> json) {
-    return ProjectFeedback(
-      id: json["comment_id"],
-      projectId: json["id_group"],
-      supervisorId: json["id_sprvsr"],
-      comment: json["comment_text"] ?? "",
-      notes: json["comment_text"] ?? "",
-      stage: json["comment_stage"] ?? json["stage"],
-      isResolved: json["is_resolved"] ?? false,
-      supervisorName: json["supervisor_name"],
-      createdAt: json["created_at"] != null
-          ? DateTime.parse(json["created_at"])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id_group": projectId,
-      "id_sprvsr": supervisorId,
-      "comment_text": comment,
-      "comment_stage": stage,
-      "is_resolved": isResolved,
     };
   }
 }
@@ -479,25 +423,14 @@ class Program {
   final String name;
   final int? departmentId;
 
-  Program({
-    this.id,
-    required this.name,
-    this.departmentId,
-  });
+  Program({this.id, required this.name, this.departmentId});
 
   factory Program.fromJson(Map<String, dynamic> json) {
     return Program(
       id: json["program_id"],
-      name: json["program_name"] ?? json["name"] ?? "",
-      departmentId: json["department_id"] ?? json["dep_id"],
+      name: json["program_name"],
+      departmentId: json["id_dep"],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "program_name": name,
-      "department_id": departmentId,
-    };
   }
 }
 
@@ -505,72 +438,52 @@ class Department {
   final int? id;
   final String name;
 
-  Department({
-    this.id,
-    required this.name,
-  });
+  Department({this.id, required this.name});
 
   factory Department.fromJson(Map<String, dynamic> json) {
     return Department(
-      id: json["dep_id"] ?? json["department_id"],
-      name: json["dep_name"] ?? json["name"] ?? "",
+      id: json["dep_id"],
+      name: json["dep_name"],
+    );
+  }
+}
+
+class Notification {
+  final int? id;
+  final int? supervisorId;
+  final String title;
+  final String message;
+  final DateTime? createdAt;
+  final bool? isRead;
+
+  Notification({
+    this.id,
+    this.supervisorId,
+    required this.title,
+    required this.message,
+    this.createdAt,
+    this.isRead,
+  });
+
+  factory Notification.fromJson(Map<String, dynamic> json) {
+    return Notification(
+      id: json["notif_id"],
+      supervisorId: json["id_sprvsr"],
+      title: json["notif_title"],
+      message: json["notif_message"],
+      createdAt: json["created_at"] != null
+          ? DateTime.parse(json["created_at"])
+          : null,
+      isRead: json["is_read"],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "dep_name": name,
+      "id_sprvsr": supervisorId,
+      "notif_title": title,
+      "notif_message": message,
+      "is_read": isRead,
     };
-  }
-}
-
-class HeadOfDepartment {
-  final int? id;
-  final String name;
-
-  HeadOfDepartment({
-    this.id,
-    required this.name,
-  });
-
-  factory HeadOfDepartment.fromJson(Map<String, dynamic> json) {
-    return HeadOfDepartment(
-      id: json["hod_id"] ?? json["id"],
-      name: json["hod_name"] ?? json["name"] ?? "",
-    );
-  }
-}
-
-class ProgramCoordinator {
-  final int? id;
-  final String name;
-
-  ProgramCoordinator({
-    this.id,
-    required this.name,
-  });
-
-  factory ProgramCoordinator.fromJson(Map<String, dynamic> json) {
-    return ProgramCoordinator(
-      id: json["coord_id"] ?? json["id"],
-      name: json["coord_name"] ?? json["name"] ?? "",
-    );
-  }
-}
-
-class Dean {
-  final int? id;
-  final String name;
-
-  Dean({
-    this.id,
-    required this.name,
-  });
-
-  factory Dean.fromJson(Map<String, dynamic> json) {
-    return Dean(
-      id: json["dean_id"] ?? json["id"],
-      name: json["dean_name"] ?? json["name"] ?? "",
-    );
   }
 }
