@@ -70,21 +70,306 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 800;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FB),
-      body: Column(
+      appBar: isMobile ? _buildMobileAppBar() : null,
+      drawer: isMobile ? _buildDrawer() : null,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : isMobile
+              ? _buildMobileLayout()
+              : _buildDesktopLayout(),
+    );
+  }
+
+  // ========== Mobile Layout ==========
+  PreferredSizeWidget _buildMobileAppBar() {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 1,
+      title: const Text(
+        'نظام إدارة ومتابعة أبحاث التخرج',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF2D62ED),
+        ),
+      ),
+      centerTitle: true,
+      actions: [
+        Stack(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.notifications_none, color: Colors.grey),
+              onPressed: () {},
+            ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
-          _buildTopBar(),
-          Expanded(
-            child: Row(
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Color(0xFF2D62ED),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                _buildMainContent(),
-                _buildSidebar(),
+                const CircleAvatar(
+                  radius: 24,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person, color: Color(0xFF2D62ED)),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _supervisorName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Text(
+                  'المشرف الأكاديمي',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                  ),
+                ),
               ],
+            ),
+          ),
+          _buildDrawerItem(0, Icons.grid_view_rounded, 'لوحة التحكم', () {
+            Navigator.pop(context);
+            setState(() => _selectedIndex = 0);
+          }),
+          _buildDrawerItem(1, Icons.people_outline, 'إدارة المجموعات', () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SupervisorProjectsList(
+                  supervisorId: widget.supervisor?.id ?? 0,
+                  supervisorName: _supervisorName,
+                ),
+              ),
+            );
+          }),
+          _buildDrawerItem(2, Icons.chat_bubble_outline, 'الدردشات', () {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('صفحة الدردشات قيد الإنشاء')),
+            );
+          }),
+          _buildDrawerItem(3, Icons.edit_note_rounded, 'إدخال الدرجات', () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GradesEntry(
+                  supervisorId: widget.supervisor?.id ?? 0,
+                ),
+              ),
+            );
+          }),
+          _buildDrawerItem(4, Icons.settings_outlined, 'الإعدادات', () {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('صفحة الإعدادات قيد الإنشاء')),
+            );
+          }),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text('تسجيل الخروج'),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem(int index, IconData icon, String title, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: const Color(0xFF2D62ED)),
+      title: Text(title),
+      selected: _selectedIndex == index,
+      selectedTileColor: const Color(0xFF2D62ED).withOpacity(0.1),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildMobileLayout() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const Text(
+            'لوحة التحكم',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF2D3748),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'مرحباً بك د. $_supervisorName',
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF718096),
+            ),
+          ),
+          const SizedBox(height: 24),
+          _buildMobileInfoCard(
+            title: 'البرنامج',
+            value: _programName,
+            color: const Color(0xFF06B6D4),
+          ),
+          const SizedBox(height: 12),
+          _buildMobileInfoCard(
+            title: 'القسم',
+            value: _departmentName,
+            color: const Color(0xFF7C3AED),
+          ),
+          const SizedBox(height: 12),
+          _buildMobileInfoCard(
+            title: 'عدد الأبحاث',
+            value: _totalProjects.toString(),
+            color: const Color(0xFF2D62ED),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SupervisorProjectsList(
+                      supervisorId: widget.supervisor?.id ?? 0,
+                      supervisorName: _supervisorName,
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.list),
+              label: const Text('عرض المجموعات'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2D62ED),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GradesEntry(
+                      supervisorId: widget.supervisor?.id ?? 0,
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.edit_note),
+              label: const Text('إدخال الدرجات'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF7C3AED),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMobileInfoCard({
+    required String title,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ========== Desktop Layout ==========
+  Widget _buildDesktopLayout() {
+    return Column(
+      children: [
+        _buildTopBar(),
+        Expanded(
+          child: Row(
+            children: [
+              _buildMainContent(),
+              _buildSidebar(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -98,13 +383,11 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
       ),
       child: Row(
         children: [
-          // Logout Icon
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.red, size: 24),
             onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
           ),
           const SizedBox(width: 16),
-          // Notifications Icon
           Stack(
             children: [
               const Icon(Icons.notifications_none, color: Colors.grey, size: 28),
@@ -123,7 +406,6 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
             ],
           ),
           const SizedBox(width: 24),
-          // User Info
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +434,6 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
             child: Icon(Icons.person, color: Colors.white),
           ),
           const Spacer(),
-          // System Name
           const Text(
             'نظام إدارة ومتابعة أبحاث التخرج',
             style: TextStyle(
@@ -185,42 +466,49 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
       child: Column(
         children: [
           const SizedBox(height: 24),
-          _buildSidebarItem(0, Icons.grid_view_rounded, 'لوحة التحكم'),
-          _buildSidebarItem(1, Icons.people_outline, 'إدارة المجموعات'),
-          _buildSidebarItem(2, Icons.chat_bubble_outline, 'الدردشات'),
-          _buildSidebarItem(3, Icons.edit_note_rounded, 'إدخال الدرجات النهائية'),
-          _buildSidebarItem(4, Icons.settings_outlined, 'الإعدادات'),
+          _buildSidebarItem(0, Icons.grid_view_rounded, 'لوحة التحكم', () {
+            setState(() => _selectedIndex = 0);
+          }),
+          _buildSidebarItem(1, Icons.people_outline, 'إدارة المجموعات', () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SupervisorProjectsList(
+                  supervisorId: widget.supervisor?.id ?? 0,
+                  supervisorName: _supervisorName,
+                ),
+              ),
+            );
+          }),
+          _buildSidebarItem(2, Icons.chat_bubble_outline, 'الدردشات', () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('صفحة الدردشات قيد الإنشاء')),
+            );
+          }),
+          _buildSidebarItem(3, Icons.edit_note_rounded, 'إدخال الدرجات النهائية', () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GradesEntry(
+                  supervisorId: widget.supervisor?.id ?? 0,
+                ),
+              ),
+            );
+          }),
+          _buildSidebarItem(4, Icons.settings_outlined, 'الإعدادات', () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('صفحة الإعدادات قيد الإنشاء')),
+            );
+          }),
         ],
       ),
     );
   }
 
-  Widget _buildSidebarItem(int index, IconData icon, String title) {
+  Widget _buildSidebarItem(int index, IconData icon, String title, VoidCallback onTap) {
     bool isSelected = _selectedIndex == index;
     return GestureDetector(
-      onTap: () {
-        setState(() => _selectedIndex = index);
-        if (index == 1) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SupervisorProjectsList(
-                supervisorId: widget.supervisor?.id ?? 0,
-                supervisorName: _supervisorName,
-              ),
-            ),
-          );
-        } else if (index == 3) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GradesEntry(
-                supervisorId: widget.supervisor?.id ?? 0,
-              ),
-            ),
-          );
-        }
-      },
+      onTap: onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -284,21 +572,21 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
               ),
             ),
             const SizedBox(height: 48),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            Wrap(
+              spacing: 24,
+              runSpacing: 24,
+              alignment: WrapAlignment.end,
               children: [
                 _buildInfoCard(
                   title: 'عدد الأبحاث التي أشرف عليها',
                   value: _totalProjects.toString(),
                   color: const Color(0xFF2D62ED),
                 ),
-                const SizedBox(width: 24),
                 _buildInfoCard(
                   title: 'القسم',
                   value: _departmentName,
                   color: const Color(0xFF7C3AED),
                 ),
-                const SizedBox(width: 24),
                 _buildInfoCard(
                   title: 'البرنامج',
                   value: _programName,

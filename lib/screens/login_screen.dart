@@ -54,15 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _loginAsGuest() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SupervisorDashboard(isGuest: true),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,33 +154,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         )
                       : const Text('تسجيل الدخول', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
-                const SizedBox(height: 24),
-                const Row(
-                  children: [
-                    Expanded(child: Divider()),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text('أو', style: TextStyle(color: Color(0xFF718096))),
-                    ),
-                    Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                OutlinedButton(
-                  onPressed: _loginAsGuest,
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    side: const BorderSide(color: Color(0xFF2D62ED)),
-                    foregroundColor: const Color(0xFF2D62ED),
-                  ),
-                  child: const Text('دخول تجريبي كمشرف', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
