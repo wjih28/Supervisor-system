@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/supabase_service.dart';
 import '../../models/models.dart';
-import '../screens/supervisor/project_details.dart';
+import 'project_details.dart';
 
 class SupervisorProjectsList extends StatefulWidget {
   final int supervisorId;
@@ -56,7 +56,7 @@ class _SupervisorProjectsListState extends State<SupervisorProjectsList> {
                       child: ListTile(
                         title: Text(project.name),
                         subtitle: Text(
-                            'نسبة الإنجاز: ${(project.progress ?? 0 * 100).toInt()}%'),
+                            'نسبة الإنجاز: ${((project.progress ?? 0) * 100).toInt()}%'),
                         trailing: Chip(
                           label: Text(_getStatusText(project.status)),
                           backgroundColor:

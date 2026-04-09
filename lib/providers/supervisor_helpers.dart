@@ -184,9 +184,7 @@ class SupervisorHelpers {
   static bool isProjectDelayed(ResearchGroup group) {
     if (group.status == 'delayed') return true;
     if (group.status == 'completed') return false;
-    // Consider a project delayed if it's past a certain point in time without enough progress
-    // This logic is simplified and can be expanded based on project deadlines.
-    return group.progress ?? 0.0 < 0.5; 
+    return (group.progress ?? 0.0) < 0.5; 
   }
 
   /// الحصول على تحذير التأخر
@@ -240,7 +238,7 @@ class SupervisorHelpers {
 
   /// التحقق من صحة بيانات الملاحظة
   static bool isValidComment(ProjectFeedback comment) {
-    return comment.projectId != null &&
+    return comment.groupId != null &&
         comment.supervisorId != null &&
         comment.comment.isNotEmpty;
   }
