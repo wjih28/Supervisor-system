@@ -387,3 +387,54 @@ class SupabaseService {
     }
   }
 }
+
+  // جلب إعدادات المشرف
+  static Future<SupervisorSettings?> getSupervisorSettings(int supervisorId) async {
+    try {
+      final response = await client
+          .from('supervisor_settings')
+          .select()
+          .eq('id_sprvsr', supervisorId)
+          .maybeSingle();
+
+      if (response != null) {
+        return SupervisorSettings.fromJson(response);
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching supervisor settings: $e');
+      return null;
+    }
+  }
+
+  // تحديث إعدادات المشرف
+  static Future<bool> updateSupervisorSettings(SupervisorSettings settings) async {
+    try {
+      if (settings.id != null) {
+        await client
+            .from('supervisor_settings')
+            .update(settings.toJson())
+            .eq('settings_id', settings.id!);
+      } else {
+        await client.from('supervisor_settings').insert(settings.toJson());
+      }
+      return true;
+    } catch (e) {
+      print('Error updating supervisor settings: $e');
+      return false;
+    }
+  }
+
+  // تحديث كلمة مرور المشرف
+  static Future<bool> updateSupervisorPassword(int supervisorId, String newPassword) async {
+    try {
+      await client
+          .from('supervisor')
+          .update({'sprvsr_password': newPassword})
+          .eq('sprvsr_id', supervisorId);
+      return true;
+    } catch (e) {
+      print('Error updating supervisor password: $e');
+      return false;
+    }
+  }

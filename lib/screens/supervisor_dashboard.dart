@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import 'supervisor/projects_list.dart';
 import 'supervisor/grades_entry.dart';
+import 'supervisor/settings_screen.dart';
 import '../services/supabase_service.dart';
 
 class SupervisorDashboard extends StatefulWidget {
@@ -195,9 +196,14 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
           }),
           _buildDrawerItem(4, Icons.settings_outlined, 'الإعدادات', () {
             Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('صفحة الإعدادات قيد الإنشاء')),
-            );
+            if (widget.supervisor != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SettingsScreen(supervisor: widget.supervisor!),
+                ),
+              );
+            }
           }),
           const Divider(),
           ListTile(
@@ -496,9 +502,14 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
             );
           }),
           _buildSidebarItem(4, Icons.settings_outlined, 'الإعدادات', () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('صفحة الإعدادات قيد الإنشاء')),
-            );
+            if (widget.supervisor != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SettingsScreen(supervisor: widget.supervisor!),
+                ),
+              );
+            }
           }),
         ],
       ),
