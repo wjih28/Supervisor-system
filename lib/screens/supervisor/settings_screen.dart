@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
-import '../../models/settings_model.dart';
 import '../../services/supabase_service.dart';
 
 class SettingsScreen extends StatefulWidget {
