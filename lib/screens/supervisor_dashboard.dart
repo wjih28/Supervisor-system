@@ -3,6 +3,7 @@ import '../models/models.dart';
 import 'supervisor/projects_list.dart';
 import 'supervisor/grades_entry.dart';
 import 'supervisor/settings_screen.dart';
+import 'supervisor/chats_screen.dart';
 import '../services/supabase_service.dart';
 
 class SupervisorDashboard extends StatefulWidget {
@@ -179,8 +180,14 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
           }),
           _buildDrawerItem(2, Icons.chat_bubble_outline, 'الدردشات', () {
             Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('صفحة الدردشات قيد الإنشاء')),
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatsScreen(
+                  supervisorId: widget.supervisor?.id ?? 0,
+                  supervisorName: _supervisorName,
+                ),
+              ),
             );
           }),
           _buildDrawerItem(3, Icons.edit_note_rounded, 'إدخال الدرجات', () {
