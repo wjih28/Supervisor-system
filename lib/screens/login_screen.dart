@@ -154,6 +154,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         )
                       : const Text('تسجيل الدخول', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SupervisorDashboard(isGuest: true),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'الدخول كضيف (مشرف)',
+                    style: TextStyle(color: Color(0xFF2D62ED), fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             ),
           ),

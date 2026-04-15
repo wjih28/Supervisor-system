@@ -7,11 +7,13 @@ import '../../providers/supervisor_helpers.dart';
 class ChatsScreen extends StatefulWidget {
   final int supervisorId;
   final String supervisorName;
+  final bool isGuest;
 
   const ChatsScreen({
     super.key,
     required this.supervisorId,
     required this.supervisorName,
+    this.isGuest = false,
   });
 
   @override
@@ -35,6 +37,27 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   Future<void> _loadChats() async {
     setState(() => _isLoading = true);
+    if (widget.isGuest) {
+      _chats = [
+        {
+          'chat_id': 1,
+          'groups': {'group_name': 'مجموعة نظام المستشفيات'},
+          'last_message': 'تم رفع التقرير النهائي يا دكتور',
+          'last_message_time': DateTime.now().subtract(const Duration(minutes: 5)).toIso8601String(),
+        },
+        {
+          'chat_id': 2,
+          'groups': {'group_name': 'مجموعة التجارة الإلكترونية'},
+          'last_message': 'متى موعد المناقشة القادم؟',
+          'last_message_time': DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
+        },
+      ];
+      if (_selectedChatId == null) {
+        _selectChat(_chats[0]['chat_id'], _chats[0]['groups']['group_name']);
+      }
+      setState(() => _isLoading = false);
+      return;
+    }
     try {
       final response = await Supabase.instance.client
           .from('chats')
@@ -65,6 +88,28 @@ class _ChatsScreenState extends State<ChatsScreen> {
   }
 
   Future<void> _loadMessages(int chatId) async {
+    if (widget.isGuest) {
+      _messages = [
+        {
+          'message_text': 'السلام عليكم يا دكتور، هل يمكننا مراجعة الفصل الثالث؟',
+          'sender_role': 'student',
+          'created_at': DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
+        },
+        {
+          'message_text': 'وعليكم السلام، نعم بالتأكيد. سأطلع عليه اليوم.',
+          'sender_role': 'supervisor',
+          'created_at': DateTime.now().subtract(const Duration(minutes: 30)).toIso8601String(),
+        },
+        {
+          'message_text': 'شكراً جزيلاً يا دكتور.',
+          'sender_role': 'student',
+          'created_at': DateTime.now().subtract(const Duration(minutes: 10)).toIso8601String(),
+        },
+      ];
+      setState(() {});
+      _scrollToBottom();
+      return;
+    }
     try {
       final response = await Supabase.instance.client
           .from('messages')

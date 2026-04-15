@@ -6,11 +6,13 @@ import 'project_details.dart';
 class SupervisorProjectsList extends StatefulWidget {
   final int supervisorId;
   final String supervisorName;
+  final bool isGuest;
 
   const SupervisorProjectsList({
     super.key,
     required this.supervisorId,
     required this.supervisorName,
+    this.isGuest = false,
   });
 
   @override
@@ -29,8 +31,36 @@ class _SupervisorProjectsListState extends State<SupervisorProjectsList> {
 
   Future<void> _loadProjects() async {
     setState(() => _isLoading = true);
-    _projects =
-        await SupabaseService.getGroupsBySupervisor(widget.supervisorId);
+    if (widget.isGuest) {
+      _projects = [
+        ResearchGroup(
+          id: 1,
+          name: 'نظام إدارة المستشفيات الذكي',
+          progress: 0.75,
+          status: 'in_progress',
+          programId: 1,
+          supervisorId: 1,
+        ),
+        ResearchGroup(
+          id: 2,
+          name: 'تطبيق التجارة الإلكترونية المتقدم',
+          progress: 0.45,
+          status: 'in_progress',
+          programId: 1,
+          supervisorId: 1,
+        ),
+        ResearchGroup(
+          id: 3,
+          name: 'نظام تتبع الحافلات المدرسية',
+          progress: 0.90,
+          status: 'pending_approval',
+          programId: 1,
+          supervisorId: 1,
+        ),
+      ];
+    } else {
+      _projects = await SupabaseService.getGroupsBySupervisor(widget.supervisorId);
+    }
     setState(() => _isLoading = false);
   }
 

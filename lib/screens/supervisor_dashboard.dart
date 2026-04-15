@@ -174,6 +174,7 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
                 builder: (context) => SupervisorProjectsList(
                   supervisorId: widget.supervisor?.id ?? 0,
                   supervisorName: _supervisorName,
+                  isGuest: widget.isGuest,
                 ),
               ),
             );
@@ -186,6 +187,7 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
                 builder: (context) => ChatsScreen(
                   supervisorId: widget.supervisor?.id ?? 0,
                   supervisorName: _supervisorName,
+                  isGuest: widget.isGuest,
                 ),
               ),
             );
@@ -286,6 +288,7 @@ class _SupervisorDashboardState extends State<SupervisorDashboard> {
                     builder: (context) => SupervisorProjectsList(
                       supervisorId: widget.supervisor?.id ?? 0,
                       supervisorName: _supervisorName,
+                      isGuest: widget.isGuest,
                     ),
                   ),
                 );
