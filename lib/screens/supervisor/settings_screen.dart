@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/models.dart';
 import '../../services/supabase_service.dart';
 
@@ -128,24 +129,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'نظام إدارة ومتابعة أبحاث التخرج',
+          'الاعدادات',
           style: TextStyle(color: Color(0xFF2D62ED), fontSize: 18, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.right,
         ),
-        centerTitle: true,
+        centerTitle: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF2D62ED)),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.grey),
-            onPressed: () {},
+            icon: const Icon(Icons.notifications_none, color: Color(0xFF2D62ED)),
+            onPressed: () => _showNotifications(),
           ),
           const SizedBox(width: 8),
-          const CircleAvatar(
-            radius: 18,
-            backgroundColor: Color(0xFFE0E0E0),
-            child: Icon(Icons.person, color: Colors.white),
+          GestureDetector(
+            onTap: () => _navigateToPersonalInfo(),
+            child: const CircleAvatar(
+              radius: 18,
+              backgroundColor: Color(0xFF2D62ED),
+              child: Icon(Icons.person, color: Colors.white),
+            ),
           ),
           const SizedBox(width: 16),
         ],
@@ -214,14 +219,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildSectionHeader(IconData icon, String title) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        Icon(icon, color: const Color(0xFF2D62ED)),
         Text(
           title,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF2D3748)),
+          textAlign: TextAlign.right,
         ),
-        const SizedBox(width: 12),
-        Icon(icon, color: const Color(0xFF2D62ED)),
       ],
     );
   }
@@ -382,30 +387,125 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
       ),
-      child: const Column(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('2025-01-15', style: TextStyle(fontWeight: FontWeight.bold)),
-              Text('تاريخ آخر تحديث:', style: TextStyle(color: Colors.grey)),
-              Text('1.0.0', style: TextStyle(fontWeight: FontWeight.bold)),
-              Text('إصدار النظام:', style: TextStyle(color: Colors.grey)),
+              const Icon(Icons.info_outline, color: Color(0xFF2D62ED)),
+              const Text('معلومات النظام', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('كلية العلوم الإدارية والإنسانية', style: TextStyle(fontWeight: FontWeight.bold)),
-              Text('الكلية:', style: TextStyle(color: Colors.grey)),
-              Text('جامعة العلوم والتكنولوجيا', style: TextStyle(fontWeight: FontWeight.bold)),
-              Text('المؤسسة:', style: TextStyle(color: Colors.grey)),
+              const Text('1.0.0', style: TextStyle(color: Colors.grey, fontSize: 14)),
+              const Text('إصدار التطبيق', style: TextStyle(color: Colors.grey, fontSize: 14)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('2025-01-15', style: TextStyle(color: Colors.grey, fontSize: 14)),
+              const Text('تاريخ آخر تحديث', style: TextStyle(color: Colors.grey, fontSize: 14)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('جامعة العلوم والتكنولوجيا', style: TextStyle(color: Colors.grey, fontSize: 14)),
+              const Text('المؤسسة', style: TextStyle(color: Colors.grey, fontSize: 14)),
             ],
           ),
         ],
       ),
     );
+  }
+
+  void _showNotifications() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('الإشعارات'),
+        content: const Text('لا توجد إشعارات جديدة'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إغلاق'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToPersonalInfo() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Color(0xFF2D62ED),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircleAvatar(
+              radius: 40,
+              backgroundColor: Colors.white,
+              child: Icon(Icons.person, size: 40, color: Color(0xFF2D62ED)),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              widget.supervisor.name,
+              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.supervisor.email ?? '',
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _logout();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              ),
+              child: const Text(
+                'تسجيل الخروج',
+                style: TextStyle(color: Color(0xFF2D62ED), fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _logout() async {
+    try {
+      await Supabase.instance.client.auth.signOut();
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      }
+    } catch (e) {
+      debugPrint('Error logging out: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('خطأ في تسجيل الخروج')),
+        );
+      }
+    }
   }
 
   Widget _buildTextField(String label, TextEditingController controller, {bool enabled = true, bool isPassword = false}) {
