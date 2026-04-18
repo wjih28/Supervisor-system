@@ -285,15 +285,21 @@ class SupabaseService {
     }
   }
 
-  // الدوال المضافة لدعم SupervisorProvider
+  // جلب إحصائيات المشرف
   static Future<Map<String, dynamic>?> getSupervisorStatistics(int supervisorId) async {
     try {
+      final groups = await getGroupsBySupervisor(supervisorId);
+      int total = groups.length;
+      int completed = groups.where((g) => g.status == 'completed').length;
+      int inProgress = groups.where((g) => g.status == 'in_progress').length;
+      int pending = groups.where((g) => g.status == 'pending_approval').length;
+
       return {
-        'totalProjects': 10,
-        'completedProjects': 5,
-        'inProgressProjects': 3,
-        'pendingProjects': 2,
-        'pendingReviews': 4,
+        'totalProjects': total,
+        'completedProjects': completed,
+        'inProgressProjects': inProgress,
+        'pendingProjects': pending,
+        'pendingReviews': pending,
       };
     } catch (e) {
       print('Error fetching supervisor statistics: $e');
@@ -301,6 +307,7 @@ class SupabaseService {
     }
   }
 
+  // جلب التعليقات حسب المجموعة
   static Future<List<ReviewComment>> getCommentsByGroup(int groupId) async {
     try {
       final response = await client
@@ -316,6 +323,7 @@ class SupabaseService {
     }
   }
 
+  // جلب الملفات حسب المجموعة
   static Future<List<ProjectFile>> getFilesByGroup(int groupId) async {
     try {
       final response = await client
@@ -331,8 +339,10 @@ class SupabaseService {
     }
   }
 
+  // جلب مراحل المشروع
   static Future<List<ProjectStage>> getProjectStages(int groupId) async {
     try {
+      // يمكن جلبها من جدول مراحل مخصص أو استنتاجها من البيانات
       return [
         ProjectStage(id: 1, name: 'المقترح', status: 'completed', progress: 1.0),
         ProjectStage(id: 2, name: 'خطة البحث', status: 'in_progress', progress: 0.7),
@@ -344,6 +354,7 @@ class SupabaseService {
     }
   }
 
+  // إضافة تعليق
   static Future<bool> addComment(ReviewComment comment) async {
     try {
       await client.from('review_comments').insert(comment.toJson());
@@ -354,6 +365,7 @@ class SupabaseService {
     }
   }
 
+  // تحديث تعليق
   static Future<bool> updateComment(int commentId, ReviewComment comment) async {
     try {
       await client
@@ -367,6 +379,7 @@ class SupabaseService {
     }
   }
 
+  // حذف تعليق
   static Future<bool> deleteComment(int commentId) async {
     try {
       await client.from('review_comments').delete().eq('comment_id', commentId);
@@ -377,8 +390,10 @@ class SupabaseService {
     }
   }
 
+  // تحديث حالة المرحلة
   static Future<bool> updateStageStatus(int stageId, String status, double progress) async {
     try {
+      // تحديث في جدول المراحل إذا وجد
       print('Updating stage $stageId to status $status with $progress%');
       return true;
     } catch (e) {
@@ -386,7 +401,6 @@ class SupabaseService {
       return false;
     }
   }
-}
 
   // جلب إعدادات المشرف
   static Future<SupervisorSettings?> getSupervisorSettings(int supervisorId) async {
@@ -438,3 +452,68 @@ class SupabaseService {
       return false;
     }
   }
+
+  // --- دوال الدردشة (Chat Functions) ---
+
+  // جلب المحادثات الخاصة بالمشرف
+  static Future<List<Map<String, dynamic>>> getSupervisorChats(int supervisorId) async {
+    try {
+      final response = await client
+          .from('chats')
+          .select('*, groups(group_name)')
+          .eq('id_sprvsr', supervisorId)
+          .order('last_message_time', ascending: false);
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      print('Error fetching supervisor chats: $e');
+      return [];
+    }
+  }
+
+  // جلب رسائل محادثة معينة
+  static Future<List<Map<String, dynamic>>> getChatMessages(int chatId) async {
+    try {
+      final response = await client
+          .from('messages')
+          .select()
+          .eq('id_chat', chatId)
+          .order('created_at', ascending: true);
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      print('Error fetching chat messages: $e');
+      return [];
+    }
+  }
+
+  // إرسال رسالة جديدة
+  static Future<bool> sendMessage(int chatId, String text, String senderRole) async {
+    try {
+      await client.from('messages').insert({
+        'id_chat': chatId,
+        'message_text': text,
+        'sender_role': senderRole,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+      
+      // تحديث وقت آخر رسالة في المحادثة
+      await client.from('chats').update({
+        'last_message': text,
+        'last_message_time': DateTime.now().toIso8601String(),
+      }).eq('chat_id', chatId);
+      
+      return true;
+    } catch (e) {
+      print('Error sending message: $e');
+      return false;
+    }
+  }
+
+  // الاستماع للرسائل الجديدة (Real-time)
+  static Stream<List<Map<String, dynamic>>> getMessagesStream(int chatId) {
+    return client
+        .from('messages')
+        .stream(primaryKey: ['message_id'])
+        .eq('id_chat', chatId)
+        .order('created_at', ascending: true);
+  }
+}
